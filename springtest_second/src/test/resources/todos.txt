@@ -1,0 +1,5 @@
+1. setup logbacka
+    a) dodawanie requestId jesli nei istnieje
+    b) przekazywanie dalej
+    c) sprwadzenie czy przesyla miedzy serwisami
+2. czy commonowe componenty mozna wydzielic do osobnego projektu?

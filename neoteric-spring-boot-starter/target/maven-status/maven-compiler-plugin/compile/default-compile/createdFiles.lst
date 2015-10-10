@@ -1,0 +1,9 @@
+com/neoteric/starter/jersey/AbstractJerseyConfig.class
+com/neoteric/starter/tracing/RequestTracingAutoConfiguration.class
+com/neoteric/starter/jersey/ObjectMapperProvider.class
+com/neoteric/starter/feign/FeignProperties.class
+com/neoteric/starter/feign/FeignJaxRsAutoConfiguration.class
+com/neoteric/starter/jackson/JacksonDefaultsAutoConfiguration.class
+com/neoteric/starter/tracing/RequestIdFilter.class
+com/neoteric/starter/date/DateTimeAutoConfiguration.class
+com/neoteric/starter/tracing/RequestIdAppendInterceptor.class

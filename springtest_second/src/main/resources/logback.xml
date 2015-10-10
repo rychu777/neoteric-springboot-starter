@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
+
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%clr(%d{yy-MM-dd HH:mm:ss.SSS}){faint} %clr([%X{REQUEST_ID}]){red} %clr(%5p) %clr(${PID:- }){magenta} %clr(-){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%rEx}"/>
+    <property name="FILE_LOG_PATTERN"
+              value="%d{yy-MM-dd HH:mm:ss.SSS} [%X{REQUEST_ID}] %5p ${PID:- } - [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%rEx}"/>
+
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+    <include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
+
+    <logger name="com.neoteric" level="TRACE"/>
+    <logger name="org.eclipse.jetty" level="WARN"/>
+    <logger name="org.mongodb" level="INFO"/>
+    <logger name="org.mongodb.driver.cluster" level="INFO"/>
+    <logger name="org.quartz" level="INFO"/>
+    <logger name="com.squarespace.jersey2.guice" level="DEBUG"/>
+    <logger name="org.apache.activemq" level="DEBUG"/>
+    <logger name="org.apache.activemq.transport" level="INFO"/>
+    <logger name="io.swagger" level="INFO"/>
+
+    <!-- Spring Boot -->
+    <logger name="jndi" level="INFO"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.hibernate.validator" level="INFO"/>
+    <logger name="org.jboss" level="INFO"/>
+    <logger name="org.apache.sshd" level="INFO"/>
+
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>

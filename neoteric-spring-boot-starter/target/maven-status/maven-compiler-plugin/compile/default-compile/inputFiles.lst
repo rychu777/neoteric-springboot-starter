@@ -1,0 +1,6 @@
+/home/dziesio/projekty/springboot/neoteric-spring-boot-starter/src/main/java/com/neoteric/starter/jackson/JacksonDefaultsAutoConfiguration.java
+/home/dziesio/projekty/springboot/neoteric-spring-boot-starter/src/main/java/com/neoteric/starter/tracing/RequestIdFilter.java
+/home/dziesio/projekty/springboot/neoteric-spring-boot-starter/src/main/java/com/neoteric/starter/date/DateTimeAutoConfiguration.java
+/home/dziesio/projekty/springboot/neoteric-spring-boot-starter/src/main/java/com/neoteric/starter/tracing/RequestTracingAutoConfiguration.java
+/home/dziesio/projekty/springboot/neoteric-spring-boot-starter/src/main/java/com/neoteric/starter/jersey/AbstractJerseyConfig.java
+/home/dziesio/projekty/springboot/neoteric-spring-boot-starter/src/main/java/com/neoteric/starter/jersey/ObjectMapperProvider.java

@@ -6,18 +6,9 @@ import org.junit.Test;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.TimeZone;
 
 public class AbcTest {
-
-    @Test
-    public void shouldName() throws Exception {
-
-        ZonedDateTime date = ZonedDateTime.now();
-        System.out.println(date);
-    }
-
 
     @Test
     public void shouldabc() throws Exception {

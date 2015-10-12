@@ -1,5 +1,6 @@
 package pl.poznachowski.springboot;
 
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import javax.ws.rs.core.Response;
 @Path("/v1/endpoint")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Api(tags = "/v1/endpoint")
 public class SampleEndpoint {
 
     private static final Logger LOG = LoggerFactory.getLogger(SampleEndpoint.class);

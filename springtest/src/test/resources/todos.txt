@@ -3,3 +3,5 @@
     b) przekazywanie dalej
     c) sprwadzenie czy przesyla miedzy serwisami
 2. czy commonowe componenty mozna wydzielic do osobnego projektu?
+3. Metryki
+4. logowanie z metrykami do ELK

@@ -12,6 +12,8 @@
         <assertj.version>3.2.0</assertj.version>
         <wiremock.version>1.56</wiremock.version>
         <rest-assured.version>2.6.0</rest-assured.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <dependencyManagement>

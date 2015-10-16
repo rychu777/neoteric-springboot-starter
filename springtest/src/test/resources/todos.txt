@@ -5,3 +5,9 @@
 2. czy commonowe componenty mozna wydzielic do osobnego projektu?
 3. Metryki
 4. logowanie z metrykami do ELK
+5. Actuator nie dziala, byc moze konflikt Staxa ze Swaggerem
+6. ObjectMapper @Bean Module nie jest łykany :( + sprwadzic overriding przez @DateTimeFormat
+7. czy dateFormat mozna zapodac przez property ?
+8. Kiedy injectujesz ObjectMapper w kontrolerze, robi sie kupa, nie wczyta Modułów.
+8b. Poprawka: bean dateTimeFormatter nie moze byc w rest kontrolerze, moze byc np w glownej klasie aplikacji.
+9. Exception mappers

@@ -1,7 +1,7 @@
 package com.neoteric.starter.feign;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.neoteric.starter.tracing.RequestIdAppendInterceptor;
+import com.neoteric.starter.Constants;
 import feign.Contract;
 import feign.Feign;
 import feign.Logger;
@@ -10,6 +10,7 @@ import feign.codec.Encoder;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import feign.jaxrs.JAXRSContract;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -18,11 +19,13 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConditionalOnClass(Feign.class)
-@EnableConfigurationProperties(FeignProperties.class)
+@EnableConfigurationProperties(CustomFeignProperties.class)
 public class FeignJaxRsAutoConfiguration {
 
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(FeignJaxRsAutoConfiguration.class);
+
     @Autowired
-    FeignProperties feignProperties;
+    CustomFeignProperties feignProperties;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -49,6 +52,7 @@ public class FeignJaxRsAutoConfiguration {
 
     @Bean
     Logger.Level feignLoggerLevel() {
+        LOG.debug("{}Feign Logger level: {}", Constants.LOG_PREFIX, feignProperties.getLoggerLevel());
         return Logger.Level.valueOf(feignProperties.getLoggerLevel());
     }
 }

@@ -5,16 +5,54 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("swagger")
 public class SwaggerProperties {
 
+    /**
+     * Enable swagger switch
+     */
     private boolean enabled = true;
+
+    /**
+     * Should generated swagger.json be formatted
+     */
     private boolean prettyPrint = true;
+
+    /**
+     * Provides the version of the application API
+     */
     private String version = "1";
-    private String contact = "biuro@neoteric.eu";
+
+    /**
+     * The contact information for the exposed API.
+     */
+    private String contact = "backend@neoteric.eu";
+
+    /**
+     * The transfer protocol for the operation. Values MUST be from the list: "http", "https", "ws", "wss".
+     */
     private String[] schemes = {"http"};
+
+    /**
+     * The title of the application.
+     */
     private String title;
+
+    /**
+     * A short description of the application.
+     */
     private String description;
+
+    /**
+     * The license name used for the API. Has to come together with 'licenseUrl' to be applied.
+     */
     private String license;
+
+    /**
+     * A URL to the license used for the API. MUST be in the format of a URL. Has to come together with 'license' to be applied.
+     */
     private String licenseUrl;
 
+    /**
+     * Package to scan for Swagger resources
+     */
     private String resourcePackage = "com.neoteric";
 
     public String[] getSchemes() {

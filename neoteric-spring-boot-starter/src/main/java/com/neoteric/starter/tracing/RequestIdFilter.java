@@ -13,7 +13,7 @@ import java.util.UUID;
 
 /**
  * Servlet filter to pick up ID of the request. If not found, generates new one and propagates.
- * Available in MDC at REQUEST_ID key
+ * Available in MDC by REQUEST_ID key
  */
 @WebFilter
 public class RequestIdFilter implements Filter {

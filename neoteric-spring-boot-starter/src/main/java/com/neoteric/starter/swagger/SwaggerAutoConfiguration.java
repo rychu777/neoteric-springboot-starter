@@ -1,5 +1,7 @@
 package com.neoteric.starter.swagger;
 
+import com.neoteric.starter.Constants;
+import com.neoteric.starter.jersey.CustomJerseyProperties;
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.models.Swagger;
 import org.slf4j.Logger;
@@ -10,6 +12,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 @Configuration
 @ConditionalOnClass(Swagger.class)
@@ -21,6 +24,9 @@ public class SwaggerAutoConfiguration {
 
     @Autowired
     SwaggerProperties swaggerProperties;
+
+    @Autowired
+    CustomJerseyProperties jerseyProperties;
 
     @Bean
     BeanConfig beanConfig() {
@@ -35,9 +41,11 @@ public class SwaggerAutoConfiguration {
         beanConfig.setLicenseUrl(swaggerProperties.getLicenseUrl());
         beanConfig.setResourcePackage(swaggerProperties.getResourcePackage());
         beanConfig.setSchemes(swaggerProperties.getSchemes());
-        beanConfig.setBasePath("/api");
+        if (StringUtils.hasLength(jerseyProperties.getBaseURI())) {
+            beanConfig.setBasePath(jerseyProperties.getBaseURI());
+        }
         beanConfig.setScan(true);
-        LOG.debug("Swagger enabled on {}", swaggerProperties.getResourcePackage());
+        LOG.debug("{}Swagger enabled on {}", Constants.LOG_PREFIX, swaggerProperties.getResourcePackage());
         return beanConfig;
     }
 }

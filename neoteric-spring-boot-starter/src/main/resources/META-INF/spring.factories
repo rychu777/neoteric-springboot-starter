@@ -3,5 +3,5 @@ com.neoteric.starter.date.TimeZoneAutoConfiguration,\
 com.neoteric.starter.tracing.RequestTracingAutoConfiguration,\
 com.neoteric.starter.feign.FeignJaxRsAutoConfiguration,\
 com.neoteric.starter.swagger.SwaggerAutoConfiguration,\
-com.neoteric.starter.jersey.JerseyAutoConfiguration,\
+com.neoteric.starter.jersey.JerseyDefaultsAutoConfiguration,\
 com.neoteric.starter.jackson.JacksonDefaultsAutoConfiguration

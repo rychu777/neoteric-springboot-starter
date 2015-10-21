@@ -33,6 +33,7 @@ public class SampleEndpoint2 {
 
         LOG.error("OM: {}", objectMapper);
         List<Person> all = mongoTemplate.findAll(Person.class);
+//        mongoTemplate.aggregate(match(Criteria.where("abc").is("ab").orOperator(where())))
 //        Person person = new Person("name", 10, LocalDateTime.now(), ZonedDateTime.now());
         return all;
     }

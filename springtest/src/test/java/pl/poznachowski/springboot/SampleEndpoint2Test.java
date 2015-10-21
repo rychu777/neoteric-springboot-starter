@@ -14,8 +14,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.ws.rs.core.Response;
 
-import java.util.Arrays;
-
 import static com.jayway.restassured.RestAssured.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -40,10 +38,7 @@ public class SampleEndpoint2Test {
     @Test
     public void testName() throws Exception {
 
-        System.out.println("ABC");
-        System.out.println(Arrays.toString(wac.getBeanDefinitionNames()));
-
-                System.out.println("PORT: " + port);
+        System.out.println("PORT: " + port);
 
         when()
                 .get("api/v1/test")

@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Component;
 import pl.poznachowski.springboot.mongo.Person;
 
@@ -13,6 +14,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
+
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 
 @Component
 @Path("/v1/test")
@@ -33,7 +37,7 @@ public class SampleEndpoint2 {
 
         LOG.error("OM: {}", objectMapper);
         List<Person> all = mongoTemplate.findAll(Person.class);
-//        mongoTemplate.aggregate(match(Criteria.where("abc").is("ab").orOperator(where())))
+        mongoTemplate.aggregate(newAggregation(match(Criteria.where("abc").and())), "abc", Person.class);
 //        Person person = new Person("name", 10, LocalDateTime.now(), ZonedDateTime.now());
         return all;
     }

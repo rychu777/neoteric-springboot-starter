@@ -33,9 +33,18 @@ public class RequestParamsCriteriaBuilderTest {
         RequestParamsParser parser = new RequestParamsParser();
         Map<RequestObject, Object> filterMap = parser.parseFilters(mapa);
 
-        RequestParamsCriteriaBuilder criteriaBuilder = new RequestParamsCriteriaBuilder();
+        RequestParamsCriteriaBuilder criteriaBuilder = RequestParamsCriteriaBuilder.newBuilder();
         Criteria build = criteriaBuilder.build(filterMap);
 
         LOG.warn("Criteria: {}", build.getCriteriaObject());
+    }
+
+    @Test
+    public void testCriteria() throws Exception {
+
+
+        Criteria criteria = Criteria.where().orOperator(new Criteria().lt("abc"));
+        LOG.error("CRITERIA: {}", criteria.getCriteriaObject());
+
     }
 }

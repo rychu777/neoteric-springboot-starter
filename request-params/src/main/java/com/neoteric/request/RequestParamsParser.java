@@ -1,48 +1,21 @@
-package com.neoteric.starter;
+package com.neoteric.request;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Maps;
-import com.neoteric.request.*;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RequestParamsTest {
+public class RequestParamsParser {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RequestParamsTest.class);
-    private Map<RequestObject, Object> requestParameters = Maps.newHashMap();
+    private static final Logger LOG = LoggerFactory.getLogger(RequestParamsParser.class);
 
-    @Test
-    public void testNameA() throws Exception {
+    public Map<RequestObject, Object> parseFilters(Map<String, Object> rawFilters) {
+        Map<RequestObject, Object> requestParameters = new HashMap<>();
 
-        ObjectMapper mapper = new ObjectMapper();
-        String json = "{\"abc\": 34.5}";
-        Map<String, Object> mapa = mapper.readValue(json, Map.class);
-
-        mapa.forEach((s, o) -> {
-            LOG.info("KEY:{}, VALUE: {}, class: {}", s, o, o.getClass().toString());
-        });
-    }
-
-    @Test
-    public void testName() throws Exception {
-        byte[] jsonBytes = Files.readAllBytes(Paths.get("src/test/resources/requestWithOrBetweenFields.json"));
-//        byte[] jsonBytes = Files.readAllBytes(Paths.get("src/test/resources/request2.json"));
-//        byte[] jsonBytes = Files.readAllBytes(Paths.get("src/test/resources/request3.json"));
-//        byte[] jsonBytes = Files.readAllBytes(Paths.get("src/test/resources/request4.json"));
-
-
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> mapa = mapper.readValue(jsonBytes, Map.class);
-        LOG.warn("INITIAL MAP: {}", mapa);
-
-        mapa.forEach((key, entry) -> {
-            LOG.warn("Key: {}, Entry: {}", key, entry);
+        rawFilters.forEach((key, entry) -> {
+//            LOG.warn("Key: {}, Entry: {}", key, entry);
             if (isNotFieldNorLogicalOperator(key)) {
                 throw new IllegalStateException("isNotFieldNorLogicalOperator");
             }
@@ -58,17 +31,14 @@ public class RequestParamsTest {
                 requestParameters.put(RequestLogicalOperator.of(key), processRootLogicalOperatorValue((Map) entry));
             }
         });
-
-        LOG.error("MAPA: {}", requestParameters);
+        LOG.error("Parsed map: {}", requestParameters);
+        return requestParameters;
     }
 
-    //tylko w pierwszym levelu $or moze odnosic sie do pol
-    //w kazdym innym wypadku tylko inne operatory
-
     private Map<RequestObject, Object> processRootLogicalOperatorValue(Map<String, Object> orEntry) {
-        Map<RequestObject, Object> orEntryMap = Maps.newHashMap();
+        Map<RequestObject, Object> orEntryMap = new HashMap<>();
         orEntry.forEach((key, entry) -> {
-            LOG.warn("Processing Root Or operator: Key: {}, Entry: {}", key, entry);
+//            LOG.warn("Processing Root Or operator: Key: {}, Entry: {}", key, entry);
             if (!isField(key)) {
                 throw new IllegalStateException("Or in root node can't be applied with other operators");
             }
@@ -81,9 +51,9 @@ public class RequestParamsTest {
     }
 
     private Map<RequestObject, Object> processLogicalOperatorValue(Map<String, Object> orEntry) {
-        Map<RequestObject, Object> orEntryMap = Maps.newHashMap();
+        Map<RequestObject, Object> orEntryMap = new HashMap<>();
         orEntry.forEach((key, entry) -> {
-            LOG.warn("Processing Or operator: Key: {}, Entry: {}", key, entry);
+//            LOG.warn("Processing Or operator: Key: {}, Entry: {}", key, entry);
             if (!isOperator(key)) {
                 throw new IllegalStateException("Nested Or operator can't be applied with fields");
             }
@@ -98,9 +68,9 @@ public class RequestParamsTest {
     }
 
     private Map<RequestObject, Object> processFieldValue(Map<String, Object> fieldEntry) {
-        Map<RequestObject, Object> fieldEntryMap = Maps.newHashMap();
+        Map<RequestObject, Object> fieldEntryMap = new HashMap<>();
         fieldEntry.forEach((key, entry) -> {
-            LOG.warn("Processing Field: Key: {}, Entry: {}", key, entry);
+//            LOG.warn("Processing Field: Key: {}, Entry: {}", key, entry);
             if (isNotOperatorNorLogicalOperator(key)) {
                 throw new IllegalStateException("isNotOperatorNorLogicalOperator");
             }
@@ -110,12 +80,12 @@ public class RequestParamsTest {
                 }
                 fieldEntryMap.put(RequestLogicalOperator.of(key), processLogicalOperatorValue((Map) entry));
             } else {
-            RequestOperator operator = RequestOperator.of(key);
+                RequestOperator operator = RequestOperator.of(key);
                 ValueType valueType = operator.getOperator().getValueType();
                 if (valueType.equals(ValueType.ARRAY) && !(entry instanceof List)) {
                     throw new IllegalStateException("Bad value type for operator: " + entry.getClass().toString());
                 }
-            fieldEntryMap.put(RequestOperator.of(key), entry);
+                fieldEntryMap.put(RequestOperator.of(key), entry);
             }
         });
         return fieldEntryMap;
@@ -138,6 +108,6 @@ public class RequestParamsTest {
     }
 
     private boolean isNotFieldNorLogicalOperator(String key) {
-        return !(key.startsWith("$") ? LogicalOperatorType.contains(key) : true);
+        return !(!key.startsWith("$") || LogicalOperatorType.contains(key));
     }
 }

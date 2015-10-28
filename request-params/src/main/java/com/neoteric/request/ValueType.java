@@ -1,4 +1,4 @@
-package com.neoteric.starter.request;
+package com.neoteric.request;
 
 public enum ValueType {
     SCALAR, ARRAY;

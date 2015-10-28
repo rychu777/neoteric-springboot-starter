@@ -1,0 +1,13 @@
+{
+  "$or": {
+    "name": {
+      "$eq": "John"
+    },
+    "last": {
+      "$eq": "Doe"
+    }
+  },
+  "createdAt" : {
+    "$lt" : "timeStamp"
+  }
+}

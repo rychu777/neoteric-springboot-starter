@@ -1,4 +1,4 @@
-package com.neoteric.starter.request;
+package com.neoteric.request;
 
 import java.util.HashMap;
 import java.util.Map;

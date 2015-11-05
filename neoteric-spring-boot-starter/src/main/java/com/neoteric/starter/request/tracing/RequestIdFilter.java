@@ -1,4 +1,4 @@
-package com.neoteric.starter.tracing;
+package com.neoteric.starter.request.tracing;
 
 import org.jboss.logging.MDC;
 import org.slf4j.Logger;

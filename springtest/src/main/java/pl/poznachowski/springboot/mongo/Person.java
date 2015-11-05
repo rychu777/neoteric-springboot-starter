@@ -13,7 +13,6 @@ public class Person {
     private String id;
     private String name;
     private LocalDateTime local;
-
     private ZonedDateTime zoned;
     private int age;
 

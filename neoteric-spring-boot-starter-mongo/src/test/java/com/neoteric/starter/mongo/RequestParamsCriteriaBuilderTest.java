@@ -42,8 +42,16 @@ public class RequestParamsCriteriaBuilderTest {
     @Test
     public void testCriteria() throws Exception {
 
-
-        Criteria criteria = Criteria.where().orOperator(new Criteria().lt("abc"));
+        Criteria criteria = new Criteria().andOperator(
+                new Criteria().orOperator(
+                        Criteria.where("name").is("John"),
+                        Criteria.where("last").is("Doe")),
+                Criteria.where("createdAt").lt("timestamp"),
+                Criteria.where("createdAt").gt("t4"),
+                new Criteria().orOperator(
+                        Criteria.where("updatedAt").lt("t1"),
+                        Criteria.where("updatedAt").gt("t2")),
+                Criteria.where("updatedAt").lt("timestamp3"));
         LOG.error("CRITERIA: {}", criteria.getCriteriaObject());
 
     }

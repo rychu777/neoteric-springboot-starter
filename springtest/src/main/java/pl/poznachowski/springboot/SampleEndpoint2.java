@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Component;
 import pl.poznachowski.springboot.mongo.Person;
@@ -37,9 +39,22 @@ public class SampleEndpoint2 {
 
         LOG.error("OM: {}", objectMapper);
         List<Person> all = mongoTemplate.findAll(Person.class);
-        mongoTemplate.aggregate(newAggregation(match(Criteria.where("abc").and())), "abc", Person.class);
+//        mongoTemplate.aggregate(newAggregation(match(Criteria.where("abc").and())), "abc", Person.class);
 //        Person person = new Person("name", 10, LocalDateTime.now(), ZonedDateTime.now());
         return all;
+    }
+
+    @GET
+    @Path("/2")
+    public List<Person> get2() {
+
+//        Criteria criteria = Criteria.where("name").is("name").orOperator(Criteria.where("age").lt(15));
+        Criteria criteria = new Criteria().orOperator(Criteria.where("name").is("name"), Criteria.where("name").regex("Joh"));
+        LOG.error("criteria: {}", criteria.getCriteriaObject());
+
+        TypedAggregation<Person> aggregation = newAggregation(Person.class, match(criteria));
+        AggregationResults<Person> result = mongoTemplate.aggregate(aggregation, Person.class);
+        return result.getMappedResults();
     }
 
     @POST

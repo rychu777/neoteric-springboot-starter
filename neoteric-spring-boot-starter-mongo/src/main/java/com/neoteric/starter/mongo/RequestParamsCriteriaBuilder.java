@@ -1,6 +1,5 @@
 package com.neoteric.starter.mongo;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.neoteric.request.*;
@@ -11,64 +10,86 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import java.util.List;
 import java.util.Map;
 
+import static com.neoteric.starter.mongo.Mappings.LOGICAL_OPERATORS;
+import static com.neoteric.starter.mongo.Mappings.OPERATORS;
+
 public class RequestParamsCriteriaBuilder {
-
-    private Criteria criteria;
-
-    static ImmutableMap<LogicalOperatorType, LogicalOperatorFunction> LOGICAL_OPERATOR_MAPPING = ImmutableMap.<LogicalOperatorType, LogicalOperatorFunction>builder()
-            .put(LogicalOperatorType.OR, Criteria::orOperator)
-            .build();
 
     private static final Logger LOG = LoggerFactory.getLogger(RequestParamsCriteriaBuilder.class);
 
-    private RequestParamsCriteriaBuilder(Criteria criteria) {
-        this.criteria = criteria;
-    }
-
     public static RequestParamsCriteriaBuilder newBuilder() {
-        return new RequestParamsCriteriaBuilder(new Criteria());
+        return new RequestParamsCriteriaBuilder();
     }
-
 
     public Criteria build(Map<RequestObject, Object> requestParams) {
         return build(requestParams, FieldMapper.of(Maps.<String, String>newHashMap()));
     }
 
     public Criteria build(Map<RequestObject, Object> requestParams, FieldMapper fieldMapper) {
+        List<Criteria> joinedCriteria = Lists.newArrayList();
 
         requestParams.forEach(((key, value) -> {
-            LOG.info("KEY: {}. VALUE: {}", key, value);
-            LOG.info("KEY: {}. VALUE: {}", key.getClass(), value.getClass());
+            //value in root has to be map
             if (key.getType().equals(RequestObjectType.FIELD)) {
-                criteria.and(fieldMapper.get(((RequestField) key).getFieldName()));
+                List<Criteria> fieldCriteria = processField((RequestField) key, (Map) value);
+                joinedCriteria.addAll(fieldCriteria);
             } else if (key.getType().equals((RequestObjectType.LOGICAL_OPERATOR))) {
-                //Check and throw if not in LOGICAL_OPERATOR_MAPPING
-                LOGICAL_OPERATOR_MAPPING.get(((RequestLogicalOperator) key).getOperator()).apply(criteria, resolveRootLogicalOperatorCriteria((Map) value));
+                Criteria rootLogicalCriteria = processRootLogicalOperator((RequestLogicalOperator)key, (Map)value);
+                joinedCriteria.add(rootLogicalCriteria);
             } else {
                 throw new IllegalStateException("BAD TYPE");
             }
         }));
 
-        return criteria;
+        return new Criteria().andOperator(joinedCriteria.stream().toArray(Criteria[]::new));
     }
 
-    private Criteria[] resolveRootLogicalOperatorCriteria(Map<RequestObject, Object> logicalOperatorElements) {
-
-        List<Criteria> criteriaList = Lists.newArrayList();
-
-        logicalOperatorElements.forEach((key, value) -> {
-            LOG.info("KEY: {}. VALUE: {}", key, value);
-            LOG.info("KEY: {}. VALUE: {}", key.getClass(), value.getClass());
-
-            if (!(key instanceof RequestField)) {
-                throw new IllegalStateException("NOOOT");
-            }
-            RequestField field = (RequestField)key;
-
-            Criteria newFieldCriteria = Criteria.where(field.getFieldName());
-
-            criteriaList.add(newFieldCriteria);
+    //TODO: can have only fields
+    private Criteria processRootLogicalOperator(RequestLogicalOperator logicalOperator, Map<RequestObject, Object> rootLogicalValues) {
+        List<Criteria> criteriaElements = Lists.newArrayList();
+        rootLogicalValues.forEach((requestObject, logicalValue) -> {
+            List<Criteria> fieldCriterias = processField((RequestField) requestObject, (Map)logicalValue);
+            criteriaElements.addAll(fieldCriterias);
         });
-        return criteriaList.toArray(new Criteria[criteriaList.size()]);
+
+
+        return LOGICAL_OPERATORS.get(logicalOperator.getOperator()).apply(new Criteria(), criteriaElements.stream().toArray(Criteria[]::new));
     }
+
+    private List<Criteria> processField(RequestField field, Map<RequestObject, Object> fieldValues) {
+
+        List<Criteria> allFieldCriteria = Lists.newArrayList();
+
+        fieldValues.forEach((requestObject, operatorValue) -> {
+            if (requestObject instanceof RequestOperator) {
+                RequestOperator operator = (RequestOperator)requestObject;
+                Criteria fieldCriteria = Criteria.where(field.getFieldName());
+                OPERATORS.get(operator.getOperator()).apply(fieldCriteria, operatorValue);
+                allFieldCriteria.add(fieldCriteria);
+            }
+                //TODO: Can be only one logical operator within field
+            if (requestObject instanceof  RequestLogicalOperator) {
+                RequestLogicalOperator logicalOperator = (RequestLogicalOperator)requestObject;
+                Criteria logicalCriteria = processLogicalOperator(field, logicalOperator, (Map)operatorValue);
+                allFieldCriteria.add(logicalCriteria);
+            }
+        });
+
+        return allFieldCriteria;
+    }
+
+    //Not in root only operators are allowed
+    private Criteria processLogicalOperator(RequestField field, RequestLogicalOperator logicalOperator, Map<RequestObject, Object> logicalOperatorValues) {
+        List<Criteria> criteriaElements = Lists.newArrayList();
+        logicalOperatorValues.forEach((requestObject, operatorValue) -> {
+            //TODO: check if requestObject is not Operator - exception
+            RequestOperator operator = (RequestOperator) requestObject;
+            Criteria whereCriteria = Criteria.where(field.getFieldName());
+            OPERATORS.get(operator.getOperator()).apply(whereCriteria, operatorValue);
+            criteriaElements.add(whereCriteria);
+        });
+        return LOGICAL_OPERATORS.get(logicalOperator.getOperator()).apply(new Criteria(), criteriaElements.stream().toArray(Criteria[]::new));
+    }
+
+
 }

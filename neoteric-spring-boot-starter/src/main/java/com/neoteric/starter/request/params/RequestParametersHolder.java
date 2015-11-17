@@ -2,12 +2,13 @@ package com.neoteric.starter.request.params;
 
 import com.neoteric.request.RequestParameters;
 
-public abstract class RequestParametersHolder {
+public final class RequestParametersHolder {
 
     private static final ThreadLocal<RequestParameters> requestParametersHolder =
             new ThreadLocal<RequestParameters>();
 
     private RequestParametersHolder() {
+        // Prevents instantiation of the class.
     }
 
     /**

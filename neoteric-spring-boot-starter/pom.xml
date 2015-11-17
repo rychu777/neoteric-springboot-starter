@@ -18,6 +18,7 @@
         <swagger-jersey2-jaxrs.version>1.5.0</swagger-jersey2-jaxrs.version>
         <junit.version>4.11</junit.version>
         <assertj-core.version>3.2.0</assertj-core.version>
+        <junit-dataprovider.version>1.10.2</junit-dataprovider.version>
     </properties>
 
     <dependencyManagement>
@@ -115,6 +116,12 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>${assertj-core.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.tngtech.java</groupId>
+            <artifactId>junit-dataprovider</artifactId>
+            <version>${junit-dataprovider.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

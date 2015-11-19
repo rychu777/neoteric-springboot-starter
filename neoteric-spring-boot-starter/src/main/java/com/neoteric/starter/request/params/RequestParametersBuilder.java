@@ -2,6 +2,7 @@ package com.neoteric.starter.request.params;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.neoteric.request.FiltersParser;
 import com.neoteric.request.RequestObject;
 import com.neoteric.request.RequestParameters;
 import org.slf4j.Logger;

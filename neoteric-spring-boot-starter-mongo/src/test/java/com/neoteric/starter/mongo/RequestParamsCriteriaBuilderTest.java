@@ -1,8 +1,8 @@
 package com.neoteric.starter.mongo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.neoteric.request.FiltersParser;
 import com.neoteric.request.RequestObject;
-import com.neoteric.request.RequestParamsParser;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class RequestParamsCriteriaBuilderTest {
 
         LOG.warn("MAPA: {}", mapa);
 
-        Map<RequestObject, Object> filterMap = RequestParamsParser.parseFilters(mapa);
+        Map<RequestObject, Object> filterMap = FiltersParser.parseFilters(mapa);
 
         RequestParamsCriteriaBuilder criteriaBuilder = RequestParamsCriteriaBuilder.newBuilder();
         Criteria build = criteriaBuilder.build(filterMap);

@@ -1,6 +1,5 @@
-package com.neoteric.starter.request.params;
+package com.neoteric.request;
 
-import com.neoteric.request.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

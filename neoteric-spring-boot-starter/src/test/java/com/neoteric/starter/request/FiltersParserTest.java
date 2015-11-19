@@ -2,16 +2,16 @@ package com.neoteric.starter.request;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.neoteric.request.FiltersParser;
 import com.neoteric.request.RequestField;
 import com.neoteric.request.RequestObject;
-import com.neoteric.starter.request.params.FiltersParser;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 
 public class FiltersParserTest {

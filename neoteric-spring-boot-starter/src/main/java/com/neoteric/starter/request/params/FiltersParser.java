@@ -1,5 +1,6 @@
-package com.neoteric.request;
+package com.neoteric.starter.request.params;
 
+import com.neoteric.request.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,11 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RequestParamsParser {
+public final class FiltersParser {
+    private static final Logger LOG = LoggerFactory.getLogger(FiltersParser.class);
 
-    private static final Logger LOG = LoggerFactory.getLogger(RequestParamsParser.class);
+    private FiltersParser() {
+        // Prevents instantiation of the class.
+    }
 
-    public Map<RequestObject, Object> parseFilters(Map<String, Object> rawFilters) {
+    public static Map<RequestObject, Object> parseFilters(Map<String, Object> rawFilters) {
         Map<RequestObject, Object> requestParameters = new HashMap<>();
 
         rawFilters.forEach((key, entry) -> {
@@ -35,7 +39,7 @@ public class RequestParamsParser {
         return requestParameters;
     }
 
-    private Map<RequestObject, Object> processRootLogicalOperatorValue(Map<String, Object> orEntry) {
+    private static Map<RequestObject, Object> processRootLogicalOperatorValue(Map<String, Object> orEntry) {
         Map<RequestObject, Object> orEntryMap = new HashMap<>();
         orEntry.forEach((key, entry) -> {
 //            LOG.warn("Processing Root Or operator: Key: {}, Entry: {}", key, entry);
@@ -50,7 +54,7 @@ public class RequestParamsParser {
         return orEntryMap;
     }
 
-    private Map<RequestObject, Object> processLogicalOperatorValue(Map<String, Object> orEntry) {
+    private static Map<RequestObject, Object> processLogicalOperatorValue(Map<String, Object> orEntry) {
         Map<RequestObject, Object> orEntryMap = new HashMap<>();
         orEntry.forEach((key, entry) -> {
 //            LOG.warn("Processing Or operator: Key: {}, Entry: {}", key, entry);
@@ -67,7 +71,7 @@ public class RequestParamsParser {
         return orEntryMap;
     }
 
-    private Map<RequestObject, Object> processFieldValue(Map<String, Object> fieldEntry) {
+    private static Map<RequestObject, Object> processFieldValue(Map<String, Object> fieldEntry) {
         Map<RequestObject, Object> fieldEntryMap = new HashMap<>();
         fieldEntry.forEach((key, entry) -> {
 //            LOG.warn("Processing Field: Key: {}, Entry: {}", key, entry);
@@ -91,23 +95,23 @@ public class RequestParamsParser {
         return fieldEntryMap;
     }
 
-    private boolean isLogicalOperator(String key) {
+    private static boolean isLogicalOperator(String key) {
         return LogicalOperatorType.contains(key);
     }
 
-    private boolean isOperator(String key) {
+    private static boolean isOperator(String key) {
         return OperatorType.contains(key);
     }
 
-    private boolean isField(String key) {
+    private static boolean isField(String key) {
         return !key.startsWith("$");
     }
 
-    private boolean isNotOperatorNorLogicalOperator(String key) {
+    private static boolean isNotOperatorNorLogicalOperator(String key) {
         return !(isLogicalOperator(key) || isOperator(key));
     }
 
-    private boolean isNotFieldNorLogicalOperator(String key) {
+    private static boolean isNotFieldNorLogicalOperator(String key) {
         return !(!key.startsWith("$") || LogicalOperatorType.contains(key));
     }
 }

@@ -1,6 +1,8 @@
 package pl.poznachowski.springboot;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.neoteric.request.RequestParameters;
+import com.neoteric.starter.request.params.RequestParametersHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +39,11 @@ public class SampleEndpoint2 {
     @GET
     public List<Person> get() {
 
-        LOG.error("OM: {}", objectMapper);
+
+
+        RequestParameters current = RequestParametersHolder.current();
+        LOG.warn("USING: {}", objectMapper);
+        LOG.info("Params: {}", current.getFilters());
         List<Person> all = mongoTemplate.findAll(Person.class);
 //        mongoTemplate.aggregate(newAggregation(match(Criteria.where("abc").and())), "abc", Person.class);
 //        Person person = new Person("name", 10, LocalDateTime.now(), ZonedDateTime.now());

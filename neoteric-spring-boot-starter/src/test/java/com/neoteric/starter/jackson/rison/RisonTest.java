@@ -76,8 +76,10 @@ public class RisonTest {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> mapa = mapper.readValue(jsonBytes, Map.class);
         String s = RISON.writeValueAsString(mapa);
+        String x = JSON.writeValueAsString(mapa);
 
         System.out.println(s);
+        System.out.println(x);
 
     }
 }

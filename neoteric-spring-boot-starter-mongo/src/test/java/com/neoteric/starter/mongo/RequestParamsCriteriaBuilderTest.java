@@ -30,8 +30,7 @@ public class RequestParamsCriteriaBuilderTest {
 
         LOG.warn("MAPA: {}", mapa);
 
-        RequestParamsParser parser = new RequestParamsParser();
-        Map<RequestObject, Object> filterMap = parser.parseFilters(mapa);
+        Map<RequestObject, Object> filterMap = RequestParamsParser.parseFilters(mapa);
 
         RequestParamsCriteriaBuilder criteriaBuilder = RequestParamsCriteriaBuilder.newBuilder();
         Criteria build = criteriaBuilder.build(filterMap);

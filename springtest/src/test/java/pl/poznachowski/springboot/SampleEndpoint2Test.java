@@ -42,7 +42,9 @@ public class SampleEndpoint2Test {
 
         when()
                 .get("api/v1/test")
-                .then().assertThat()
+                .then()
+                .log().all()
+                .assertThat()
                 .statusCode(Response.Status.OK.getStatusCode());
     }
 }

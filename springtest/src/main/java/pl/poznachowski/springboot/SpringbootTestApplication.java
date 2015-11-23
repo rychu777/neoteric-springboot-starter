@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.archaius.ArchaiusAutoConfiguration;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 
-@SpringBootApplication (exclude = ArchaiusAutoConfiguration.class)
+@SpringBootApplication (exclude = {ArchaiusAutoConfiguration.class})
 @EnableFeignClients
 public class SpringbootTestApplication {
 

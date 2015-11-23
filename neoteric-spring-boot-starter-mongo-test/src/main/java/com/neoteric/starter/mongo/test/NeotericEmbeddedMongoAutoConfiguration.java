@@ -1,7 +1,7 @@
-package com.neoteric.starter.mongo;
+package com.neoteric.starter.mongo.test;
 
 import com.mongodb.Mongo;
-import com.mongodb.MongoClient;
+import com.neoteric.starter.Constants;
 import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodStarter;
@@ -19,11 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.data.mongo.MongoClientDependsOnBeanFactoryPostProcessor;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoProperties;
@@ -44,10 +41,13 @@ import java.util.Map;
 import java.util.Set;
 
 @Configuration
-@EnableConfigurationProperties({ MongoProperties.class, EmbeddedMongoProperties.class })
+@EnableConfigurationProperties({MongoProperties.class, EmbeddedMongoProperties.class})
 @AutoConfigureBefore(EmbeddedMongoAutoConfiguration.class)
-@ConditionalOnClass({ Mongo.class, MongodStarter.class })
+@ConditionalOnClass({Mongo.class, MongodStarter.class})
 public class NeotericEmbeddedMongoAutoConfiguration {
+
+    private static final String LOCALHOST = "localhost";
+    private static final Logger LOG = LoggerFactory.getLogger(NeotericEmbeddedMongoAutoConfiguration.class);
 
     @Autowired
     private MongoProperties properties;
@@ -71,33 +71,19 @@ public class NeotericEmbeddedMongoAutoConfiguration {
                 Processors.logTo(logger, Slf4jLevel.INFO),
                 Processors.logTo(logger, Slf4jLevel.ERROR), Processors.named("[console>]",
                 Processors.logTo(logger, Slf4jLevel.DEBUG)));
-        return new RuntimeConfigBuilder().defaultsWithLogger(Command.MongoD, logger)
-                .processOutput(processOutput).artifactStore(getArtifactStore(logger))
+        return new RuntimeConfigBuilder()
+                .defaultsWithLogger(Command.MongoD, logger)
+                .processOutput(processOutput)
+                .artifactStore(getArtifactStore(logger))
                 .build();
     }
 
     private ArtifactStoreBuilder getArtifactStore(Logger logger) {
-        return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD)
-                .download(new DownloadConfigBuilder().defaultsForCommand(Command.MongoD)
+        return new ExtractedArtifactStoreBuilder()
+                .defaults(Command.MongoD)
+                .download(new DownloadConfigBuilder()
+                        .defaultsForCommand(Command.MongoD)
                         .progressListener(new Slf4jProgressListener(logger)));
-    }
-
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    @ConditionalOnMissingBean
-    public MongodExecutable embeddedMongoServer(IMongodConfig mongodConfig)
-            throws IOException {
-        if (getPort() == 0) {
-            publishPortInfo(mongodConfig.net().getPort());
-        }
-        MongodStarter mongodStarter = getMongodStarter(this.runtimeConfig);
-        return mongodStarter.prepare(mongodConfig);
-    }
-
-    private MongodStarter getMongodStarter(IRuntimeConfig runtimeConfig) {
-        if (runtimeConfig == null) {
-            return MongodStarter.getDefaultInstance();
-        }
-        return MongodStarter.getInstance(runtimeConfig);
     }
 
     @Bean
@@ -108,17 +94,28 @@ public class NeotericEmbeddedMongoAutoConfiguration {
                 this.embeddedProperties.getFeatures());
         MongodConfigBuilder builder = new MongodConfigBuilder()
                 .version(featureAwareVersion);
-        if (getPort() > 0) {
-            builder.net(new Net(getPort(), Network.localhostIsIPv6()));
-        }
-        return builder.build();
+        int port = Network.getFreeServerPort();
+        builder.net(new Net(LOCALHOST, port, Network.localhostIsIPv6()));
+        LOG.debug("{}Embedded MongoDB port: {}", Constants.LOG_PREFIX, port);
+        return builder
+                .timeout(new Timeout(30000))
+                .build();
     }
 
-    private int getPort() {
-        if (this.properties.getPort() == null) {
-            return MongoProperties.DEFAULT_PORT;
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    @ConditionalOnMissingBean
+    public MongodExecutable embeddedMongoServer(IMongodConfig mongodConfig)
+            throws IOException {
+        publishPortInfo(mongodConfig.net().getPort());
+        MongodStarter mongodStarter = getMongodStarter(this.runtimeConfig);
+        return mongodStarter.prepare(mongodConfig);
+    }
+
+    private MongodStarter getMongodStarter(IRuntimeConfig runtimeConfig) {
+        if (runtimeConfig == null) {
+            return MongodStarter.getDefaultInstance();
         }
-        return this.properties.getPort();
+        return MongodStarter.getInstance(runtimeConfig);
     }
 
     private void publishPortInfo(int port) {
@@ -140,26 +137,10 @@ public class NeotericEmbeddedMongoAutoConfiguration {
     private Map<String, Object> getMongoPorts(MutablePropertySources sources) {
         PropertySource<?> propertySource = sources.get("mongo.ports");
         if (propertySource == null) {
-            propertySource = new MapPropertySource("mongo.ports",
-                    new HashMap<String, Object>());
+            propertySource = new MapPropertySource("mongo.ports", new HashMap<>());
             sources.addFirst(propertySource);
         }
         return (Map<String, Object>) propertySource.getSource();
-    }
-
-    /**
-     * Additional configuration to ensure that {@link MongoClient} beans depend on the
-     * {@code embeddedMongoServer} bean.
-     */
-    @Configuration
-    @ConditionalOnClass(MongoClient.class)
-    protected static class EmbeddedMongoDependencyConfiguration
-            extends MongoClientDependsOnBeanFactoryPostProcessor {
-
-        public EmbeddedMongoDependencyConfiguration() {
-            super("embeddedMongoServer");
-        }
-
     }
 
     /**
@@ -222,8 +203,6 @@ public class NeotericEmbeddedMongoAutoConfiguration {
             }
             return super.equals(obj);
         }
-
     }
-
 }
 

@@ -45,6 +45,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.neoteric</groupId>
+            <artifactId>neoteric-spring-boot-starter-mongo-test</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>

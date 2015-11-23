@@ -51,6 +51,8 @@ Defaults for Neoteric application
     <logger name="org.apache.sshd" level="INFO"/>
     <logger name="com.netflix.servo" level="INFO"/>
 
+    <logger name="com.netflix.hystrix.strategy" level="INFO"/>
+
     <root level="DEBUG">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>

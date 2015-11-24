@@ -50,9 +50,6 @@ public class NeotericEmbeddedMongoAutoConfiguration {
     private static final Logger LOG = LoggerFactory.getLogger(NeotericEmbeddedMongoAutoConfiguration.class);
 
     @Autowired
-    private MongoProperties properties;
-
-    @Autowired
     private EmbeddedMongoProperties embeddedProperties;
 
     @Autowired

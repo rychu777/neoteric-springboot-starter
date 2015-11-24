@@ -16,7 +16,7 @@ public class MongoCleanUpListener extends AbstractTestExecutionListener {
     @Override
     public void afterTestMethod(TestContext testContext) throws Exception {
         EmbeddedMongoTest annotation = testContext.getTestClass().getAnnotation(EmbeddedMongoTest.class);
-        if (annotation.dropCollections().length == 0) {
+        if (annotation == null || annotation.dropCollections().length == 0) {
             return;
         }
         MongoTemplate mongoTemplate;

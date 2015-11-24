@@ -3,6 +3,8 @@
 ### Linux ###
 *~
 
+springboot*.log*
+
 # KDE directory preferences
 .directory
 

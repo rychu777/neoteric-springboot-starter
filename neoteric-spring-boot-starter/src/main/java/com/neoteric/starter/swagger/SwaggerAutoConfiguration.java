@@ -1,7 +1,6 @@
 package com.neoteric.starter.swagger;
 
 import com.neoteric.starter.Constants;
-import com.neoteric.starter.jersey.CustomJerseyProperties;
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.models.Swagger;
 import org.slf4j.Logger;
@@ -9,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jersey.JerseyProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +17,7 @@ import org.springframework.util.StringUtils;
 @Configuration
 @ConditionalOnClass(Swagger.class)
 @ConditionalOnProperty(value = "swagger.enabled", matchIfMissing = true)
-@EnableConfigurationProperties(SwaggerProperties.class)
+@EnableConfigurationProperties({SwaggerProperties.class, JerseyProperties.class})
 public class SwaggerAutoConfiguration {
 
     private static final Logger LOG = LoggerFactory.getLogger(SwaggerAutoConfiguration.class);
@@ -26,7 +26,7 @@ public class SwaggerAutoConfiguration {
     SwaggerProperties swaggerProperties;
 
     @Autowired
-    CustomJerseyProperties jerseyProperties;
+    JerseyProperties jerseyProperties;
 
     @Bean
     BeanConfig beanConfig() {
@@ -41,8 +41,8 @@ public class SwaggerAutoConfiguration {
         beanConfig.setLicenseUrl(swaggerProperties.getLicenseUrl());
         beanConfig.setResourcePackage(swaggerProperties.getResourcePackage());
         beanConfig.setSchemes(swaggerProperties.getSchemes());
-        if (StringUtils.hasLength(jerseyProperties.getBaseURI())) {
-            beanConfig.setBasePath(jerseyProperties.getBaseURI());
+        if (StringUtils.hasLength(jerseyProperties.getApplicationPath())) {
+            beanConfig.setBasePath(jerseyProperties.getApplicationPath());
         }
         beanConfig.setScan(true);
         LOG.debug("{}Swagger enabled on {}", Constants.LOG_PREFIX, swaggerProperties.getResourcePackage());

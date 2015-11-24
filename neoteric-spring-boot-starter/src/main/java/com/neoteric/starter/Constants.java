@@ -1,7 +1,12 @@
 package com.neoteric.starter;
 
-public interface Constants {
-    String UTC = "UTC";
-    String SWAGGER_PACKAGE = "io.swagger.jaxrs.listing";
-    String LOG_PREFIX = "[NTRC-AutoConfig] ";
+public final class Constants {
+
+    private Constants() {
+        // Prevents instantiation of the class
+    }
+
+    public static final String UTC = "UTC";
+    public static final String SWAGGER_PACKAGE = "io.swagger.jaxrs.listing";
+    public static final String LOG_PREFIX = "[NTRC-AutoConfig] ";
 }

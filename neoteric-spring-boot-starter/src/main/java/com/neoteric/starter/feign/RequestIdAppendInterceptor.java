@@ -1,6 +1,6 @@
 package com.neoteric.starter.feign;
 
-import com.neoteric.starter.tracing.RequestIdFilter;
+import com.neoteric.starter.request.tracing.RequestIdFilter;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.slf4j.MDC;

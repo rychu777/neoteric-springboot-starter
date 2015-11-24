@@ -52,17 +52,8 @@ public class JacksonDefaultsAutoConfiguration {
                 @Qualifier(ConfigBeans.JACKSON_JSR310_DATE_FORMAT) DateTimeFormatter dateTimeFormatter) {
             SimpleModule module = new SimpleModule();
             LOG.debug("{}ZonedDateTime Jackson format: {}", Constants.LOG_PREFIX, dateTimeFormatter);
-            FormattedZonedDateTimeSerializer formattedSerializer = new FormattedZonedDateTimeSerializer(dateTimeFormatter);
-            module.addSerializer(ZonedDateTime.class, formattedSerializer);
+            module.addSerializer(ZonedDateTime.class, new ZonedDateTimeSerializer(dateTimeFormatter));
             return module;
-        }
-
-        class FormattedZonedDateTimeSerializer extends ZonedDateTimeSerializer {
-            public FormattedZonedDateTimeSerializer(DateTimeFormatter formatter) {
-                super(ZonedDateTimeSerializer.INSTANCE,
-                        jacksonProperties.getSerialization().getOrDefault(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true),
-                        formatter);
-            }
         }
     }
 }

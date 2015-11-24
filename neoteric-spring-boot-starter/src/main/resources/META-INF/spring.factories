@@ -1,7 +1,7 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.neoteric.starter.date.TimeZoneAutoConfiguration,\
-com.neoteric.starter.tracing.RequestTracingAutoConfiguration,\
+com.neoteric.starter.request.RequestAutoConfiguration,\
 com.neoteric.starter.feign.FeignJaxRsAutoConfiguration,\
 com.neoteric.starter.swagger.SwaggerAutoConfiguration,\
-com.neoteric.starter.jersey.JerseyAutoConfiguration,\
+com.neoteric.starter.jersey.JerseyDefaultsAutoConfiguration,\
 com.neoteric.starter.jackson.JacksonDefaultsAutoConfiguration

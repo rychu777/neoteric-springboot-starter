@@ -31,6 +31,7 @@ Defaults for Neoteric application
 
     <!-- Tests -->
     <logger name="com.jayway.restassured.internal" level="INFO"/>
+    <logger name="org.springframework.test.context.cache" level="DEBUG"/>
 
     <root level="DEBUG">
         <appender-ref ref="CONSOLE"/>

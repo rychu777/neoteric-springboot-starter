@@ -2,7 +2,7 @@ package pl.poznachowski.springboot;
 
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("returner")
 public class TextReturner {
 
     public String returnString() {

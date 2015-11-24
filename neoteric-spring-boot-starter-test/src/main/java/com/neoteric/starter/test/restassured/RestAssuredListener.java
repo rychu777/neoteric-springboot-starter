@@ -11,6 +11,10 @@ public class RestAssuredListener extends AbstractTestExecutionListener {
 
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {
+        if (testContext.getTestClass().getAnnotation(ContainerIntegrationTest.class) == null) {
+            return;
+        }
+
         ApplicationContext applicationContext = testContext.getApplicationContext();
         String property = applicationContext.getEnvironment().getProperty("local.server.port");
         RestAssured.port = Integer.parseInt(property);

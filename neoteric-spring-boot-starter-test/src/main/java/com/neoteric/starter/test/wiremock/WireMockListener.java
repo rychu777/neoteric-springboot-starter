@@ -24,9 +24,8 @@ public class WireMockListener extends AbstractTestExecutionListener {
 
     @Override
     public void beforeTestClass(TestContext testContext) throws Exception {
-
         WireMockTest annotation = testContext.getTestClass().getAnnotation(WireMockTest.class);
-        if (annotation.value().length == 0) {
+        if (annotation == null || annotation.value().length == 0) {
             return;
         }
         port = getFreeServerPort();
@@ -34,12 +33,12 @@ public class WireMockListener extends AbstractTestExecutionListener {
 
         List<String> serviceMocks = Lists.newArrayList();
         Arrays.stream(annotation.value()).forEach(service -> {
-            serviceMocks.add(service + ".ribbon.listOfServers=localhost:" + port);
+            serviceMocks.add(String.join("", service, ".ribbon.listOfServers=localhost:", String.valueOf(port)));
         });
 
-        LOG.debug("XXXX: {}", serviceMocks);
         TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, serviceMocks.stream().toArray(String[]::new));
         server = new WireMockServer(port);
+        LOG.info("WireMock started on port {}\n", port);
     }
 
     @Override
@@ -47,9 +46,8 @@ public class WireMockListener extends AbstractTestExecutionListener {
         if (server == null) {
             return;
         }
-        LOG.debug("Starting WireMock");
         server.start();
-        WireMock.configureFor("localhost", port);
+        WireMock.configureFor(port);
     }
 
     @Override
@@ -57,7 +55,6 @@ public class WireMockListener extends AbstractTestExecutionListener {
         if (server == null) {
             return;
         }
-        LOG.debug("Stopping WireMock");
         server.stop();
     }
 

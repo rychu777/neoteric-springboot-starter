@@ -36,14 +36,17 @@ public class SampleEndpoint2 {
     @Autowired
     ObjectMapper objectMapper;
 
+    @Autowired
+    TextReturner returner;
+
     @GET
     public List<Person> get() {
-
-
 
         RequestParameters current = RequestParametersHolder.current();
         LOG.warn("USING: {}", objectMapper);
         LOG.info("Params: {}", current.getFilters());
+
+        LOG.error("{}", returner.returnString());
         List<Person> all = mongoTemplate.findAll(Person.class);
 //        mongoTemplate.aggregate(newAggregation(match(Criteria.where("abc").and())), "abc", Person.class);
 //        Person person = new Person("name", 10, LocalDateTime.now(), ZonedDateTime.now());

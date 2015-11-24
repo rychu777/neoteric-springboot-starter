@@ -20,6 +20,7 @@
         <junit.version>4.11</junit.version>
         <assertj-core.version>3.2.0</assertj-core.version>
         <junit-dataprovider.version>1.10.2</junit-dataprovider.version>
+        <archaius-core.version>0.7.1</archaius-core.version>
     </properties>
 
     <dependencyManagement>
@@ -75,6 +76,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
             <groupId>com.netflix.feign</groupId>
             <artifactId>feign-jackson</artifactId>
             <version>${feign.version}</version>
@@ -83,6 +90,11 @@
             <groupId>com.netflix.feign</groupId>
             <artifactId>feign-jaxrs</artifactId>
             <version>${feign.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.netflix.archaius</groupId>
+            <artifactId>archaius-core</artifactId>
+            <version>${archaius-core.version}</version>
         </dependency>
 
         <dependency>
@@ -99,12 +111,6 @@
                     <artifactId>jersey-container-servlet-core</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
-            <optional>true</optional>
         </dependency>
 
         <dependency>

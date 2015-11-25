@@ -3,7 +3,7 @@ package pl.poznachowski.springboot.returner;
 import org.springframework.stereotype.Component;
 
 @Component
-@DisabledAuthorization
+@DisabledAuthorizationProfile
 public class DisabledAuthReturner implements Returner {
     @Override
     public String returnString() {

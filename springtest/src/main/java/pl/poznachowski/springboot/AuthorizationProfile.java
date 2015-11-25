@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-@Profile("authorization")
-public @interface Authorization {
+@Profile(AuthorizationProfile.NAME)
+public @interface AuthorizationProfile {
+    String NAME = "authorization";
 }

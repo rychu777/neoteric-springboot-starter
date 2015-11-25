@@ -21,7 +21,7 @@ import static com.jayway.restassured.RestAssured.when;
 @SpringApplicationConfiguration(classes = {SpringbootTestApplication.class})
 @ContainerIntegrationTest
 @EmbeddedMongoTest(dropCollections = "Person")
-@ActiveProfiles("authorization")
+@ActiveProfiles(AuthorizationProfile.NAME)
 public class SampleEndpoint3Test {
 
     @Autowired

@@ -2,12 +2,13 @@ package pl.poznachowski.springboot;
 
 import com.neoteric.starter.mongo.test.EmbeddedMongoTest;
 import com.neoteric.starter.test.ReinjectableSpringBootTest;
-import com.neoteric.starter.test.reinject.ReinjectBean;
 import com.neoteric.starter.test.reinject.ReinjectableSpringApplicationContextLoader;
 import com.neoteric.starter.test.restassured.ContainerIntegrationTest;
 import com.neoteric.starter.test.wiremock.WireMockTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -20,22 +21,14 @@ import java.time.ZonedDateTime;
 import static com.jayway.restassured.RestAssured.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ReinjectableSpringBootTest(classes = {SpringbootTestApplication.class, ReinjectableSpringApplicationContextLoader.ReinjectInitializer.class})
+@ReinjectableSpringBootTest(classes = {SpringbootTestApplication.class}, initializers = ReinjectableSpringApplicationContextLoader.ReinjectInitializer.class)
 @ContainerIntegrationTest
 @EmbeddedMongoTest(dropCollections = "Person")
 @WireMockTest("testService")
 public class SampleEndpoint2Test {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SampleEndpoint2Test.class);
 
-    @ReinjectBean("returner")
-    public static TextReturner mocked() {
-        return new TextReturner() {
-            @Override
-            public String returnString() {
-                return "HEHESZKI";
-            }
-        };
-    }
 
     @Autowired
     MongoTemplate mongoTemplate;
@@ -59,10 +52,24 @@ public class SampleEndpoint2Test {
     @Test
     public void testName() throws Exception {
 
+        LOG.error("TEST2_SAMPLE1");
         mongoTemplate.insert(new Person("DSK", 50, LocalDateTime.now(), ZonedDateTime.now()));
 
         when()
-//                .get("/autoconfig")
+                .get("api/v1/test")
+                .then()
+                .log().all()
+                .assertThat()
+                .statusCode(Response.Status.OK.getStatusCode());
+    }
+
+    @Test
+    public void testName2() throws Exception {
+
+        LOG.error("TEST2_SAMPLE2");
+        mongoTemplate.insert(new Person("DSK", 50, LocalDateTime.now(), ZonedDateTime.now()));
+
+        when()
                 .get("api/v1/test")
                 .then()
                 .log().all()

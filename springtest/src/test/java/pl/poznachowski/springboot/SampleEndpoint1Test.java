@@ -2,6 +2,7 @@ package pl.poznachowski.springboot;
 
 import com.neoteric.starter.mongo.test.EmbeddedMongoTest;
 import com.neoteric.starter.test.ReinjectableSpringBootTest;
+import com.neoteric.starter.test.reinject.ReinjectBean;
 import com.neoteric.starter.test.reinject.ReinjectableSpringApplicationContextLoader;
 import com.neoteric.starter.test.restassured.ContainerIntegrationTest;
 import org.junit.Test;
@@ -23,16 +24,26 @@ import static com.jayway.restassured.RestAssured.when;
 @ReinjectableSpringBootTest(classes = {SpringbootTestApplication.class}, initializers = ReinjectableSpringApplicationContextLoader.ReinjectInitializer.class)
 @ContainerIntegrationTest
 @EmbeddedMongoTest
-public class SampleEndpoint3Test {
+public class SampleEndpoint1Test {
 
     private static final Logger LOG = LoggerFactory.getLogger(SampleEndpoint3Test.class);
+
+    @ReinjectBean("returner")
+    public static TextReturner mocked() {
+        return new TextReturner() {
+            @Override
+            public String returnString() {
+                return "HEHESZKI";
+            }
+        };
+    }
 
     @Autowired
     MongoTemplate mongoTemplate;
 
     @Test
     public void testName() throws Exception {
-        LOG.error("TEST3_SAMPLE1");
+        LOG.error("TEST1_SAMPLE1");
         mongoTemplate.insert(new Person("DSK", 50, LocalDateTime.now(), ZonedDateTime.now()));
 
         when()
@@ -45,7 +56,7 @@ public class SampleEndpoint3Test {
 
     @Test
     public void testName2() throws Exception {
-        LOG.error("TEST3_SAMPLE2");
+        LOG.error("TEST1_SAMPLE2");
         mongoTemplate.insert(new Person("DSK", 50, LocalDateTime.now(), ZonedDateTime.now()));
 
         when()

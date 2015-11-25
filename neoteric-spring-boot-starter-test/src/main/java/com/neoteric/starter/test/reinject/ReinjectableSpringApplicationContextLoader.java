@@ -61,13 +61,9 @@ public class ReinjectableSpringApplicationContextLoader extends AbstractContextL
         } else {
             application.setWebEnvironment(false);
         }
-
-        //TODO: Remove this or from classes property
-        initializers.add(new ReinjectInitializer());
         application.setInitializers(initializers);
         addReinjections(config.getTestClass());
-        ConfigurableApplicationContext applicationContext = application.run();
-        return applicationContext;
+        return application.run();
     }
 
     private void addReinjections(Class<?> testClass) {

@@ -1,4 +1,6 @@
-package com.neoteric.starter.test.reinject;
+package pl.poznachowski.springboot;
+
+import org.springframework.context.annotation.Profile;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,6 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Reinject {
+@Target({ElementType.METHOD, ElementType.TYPE})
+@Profile("authorization")
+public @interface Authorization {
 }

@@ -1,14 +1,12 @@
 package pl.poznachowski.springboot;
 
 import com.neoteric.starter.mongo.test.EmbeddedMongoTest;
-import com.neoteric.starter.test.ReinjectableSpringBootTest;
-import com.neoteric.starter.test.reinject.ReinjectBean;
-import com.neoteric.starter.test.reinject.ReinjectableSpringApplicationContextLoader;
 import com.neoteric.starter.test.restassured.ContainerIntegrationTest;
 import com.neoteric.starter.test.wiremock.WireMockTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import pl.poznachowski.springboot.mongo.Person;
@@ -20,22 +18,11 @@ import java.time.ZonedDateTime;
 import static com.jayway.restassured.RestAssured.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ReinjectableSpringBootTest(classes = {SpringbootTestApplication.class, ReinjectableSpringApplicationContextLoader.ReinjectInitializer.class})
+@SpringApplicationConfiguration(SpringbootTestApplication.class)
 @ContainerIntegrationTest
 @EmbeddedMongoTest(dropCollections = "Person")
 @WireMockTest("testService")
 public class SampleEndpoint2Test {
-
-
-    @ReinjectBean("returner")
-    public static TextReturner mocked() {
-        return new TextReturner() {
-            @Override
-            public String returnString() {
-                return "HEHESZKI";
-            }
-        };
-    }
 
     @Autowired
     MongoTemplate mongoTemplate;

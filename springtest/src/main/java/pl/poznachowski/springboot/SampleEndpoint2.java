@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Component;
 import pl.poznachowski.springboot.mongo.Person;
+import pl.poznachowski.springboot.returner.Returner;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -37,7 +38,7 @@ public class SampleEndpoint2 {
     ObjectMapper objectMapper;
 
     @Autowired
-    TextReturner returner;
+    Returner returner;
 
     @GET
     public List<Person> get() {

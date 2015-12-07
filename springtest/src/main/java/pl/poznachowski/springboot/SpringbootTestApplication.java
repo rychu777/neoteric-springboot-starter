@@ -1,10 +1,11 @@
 package pl.poznachowski.springboot;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.MetricFilterAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = MetricFilterAutoConfiguration.class)
 @EnableFeignClients
 public class SpringbootTestApplication {
 

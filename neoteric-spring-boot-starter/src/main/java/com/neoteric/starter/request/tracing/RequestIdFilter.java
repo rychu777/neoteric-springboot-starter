@@ -3,6 +3,7 @@ package com.neoteric.starter.request.tracing;
 import org.jboss.logging.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -20,6 +21,11 @@ public class RequestIdFilter implements Filter {
 
     public static final String REQUEST_ID = "REQUEST_ID";
     private static final Logger LOG = LoggerFactory.getLogger(RequestIdFilter.class);
+    private final String applicationPath;
+
+    public RequestIdFilter(String applicationPath) {
+        this.applicationPath = applicationPath;
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
@@ -27,16 +33,18 @@ public class RequestIdFilter implements Filter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         String requestId = httpServletRequest.getHeader(REQUEST_ID);
 
-        if (requestId == null || requestId.isEmpty()) {
-            requestId = UUID.randomUUID().toString();
-            LOG.trace("Request ID header not found. Assigning new Request ID: [{}]", requestId);
-        } else {
-            LOG.trace("Request ID header found: [{}].", requestId);
+        String path = new UrlPathHelper().getPathWithinApplication(httpServletRequest);
+        if (path.startsWith(applicationPath)) {
+            if (requestId == null || requestId.isEmpty()) {
+                requestId = UUID.randomUUID().toString();
+                LOG.trace("Request ID header not found. Assigning new Request ID: [{}]", requestId);
+            } else {
+                LOG.trace("Request ID header found: [{}].", requestId);
+            }
+
+            MDC.put(REQUEST_ID, requestId);
+            httpServletResponse.setHeader(REQUEST_ID, requestId);
         }
-
-        MDC.put(REQUEST_ID, requestId);
-        httpServletResponse.setHeader(REQUEST_ID, requestId);
-
         try {
             filterChain.doFilter(request, response);
         } finally {

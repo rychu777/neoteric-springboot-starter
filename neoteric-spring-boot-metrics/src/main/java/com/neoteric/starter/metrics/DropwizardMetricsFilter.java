@@ -36,20 +36,7 @@ public final class DropwizardMetricsFilter extends OncePerRequestFilter {
 
     private static final int UNDEFINED_HTTP_STATUS = 999;
 
-    private static final Set<PatternReplacer> STATUS_REPLACERS;
-
-    static {
-        Set<PatternReplacer> replacements = new LinkedHashSet<>();
-        replacements.add(new PatternReplacer("[{}]", 0, "-"));
-        replacements.add(new PatternReplacer("**", Pattern.LITERAL, "-star-star-"));
-        replacements.add(new PatternReplacer("*", Pattern.LITERAL, "-star-"));
-        replacements.add(new PatternReplacer("/-", Pattern.LITERAL, "/"));
-        replacements.add(new PatternReplacer("-/", Pattern.LITERAL, "/"));
-        STATUS_REPLACERS = Collections.unmodifiableSet(replacements);
-    }
-
     private static final Set<PatternReplacer> KEY_REPLACERS;
-
     static {
         Set<PatternReplacer> replacements = new LinkedHashSet<>();
         replacements.add(new PatternReplacer("/", Pattern.LITERAL, "."));
@@ -68,6 +55,12 @@ public final class DropwizardMetricsFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilterAsyncDispatch() {
         return false;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = new UrlPathHelper().getPathWithinApplication(request);
+        return !path.startsWith(applicationPath);
     }
 
     @Override
@@ -108,9 +101,6 @@ public final class DropwizardMetricsFilter extends OncePerRequestFilter {
     }
 
     private void recordTime(HttpServletRequest request, String path, int status, long time) {
-        if (!path.startsWith(applicationPath)) {
-            return;
-        }
         HttpStatus.Series series = getSeries(status);
         meter(series, getKey(path + "." + request.getMethod()));
         timer(getKey(path + "." + request.getMethod()), time);

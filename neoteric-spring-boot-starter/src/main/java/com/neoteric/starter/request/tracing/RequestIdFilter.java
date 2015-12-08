@@ -3,6 +3,7 @@ package com.neoteric.starter.request.tracing;
 import org.jboss.logging.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.*;
@@ -17,7 +18,7 @@ import java.util.UUID;
  * Available in MDC by REQUEST_ID key
  */
 @WebFilter
-public class RequestIdFilter implements Filter {
+public class RequestIdFilter extends OncePerRequestFilter {
 
     public static final String REQUEST_ID = "REQUEST_ID";
     private static final Logger LOG = LoggerFactory.getLogger(RequestIdFilter.class);
@@ -28,12 +29,16 @@ public class RequestIdFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        String requestId = httpServletRequest.getHeader(REQUEST_ID);
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = new UrlPathHelper().getPathWithinApplication(request);
+        return !path.startsWith(applicationPath);
+    }
 
-        String path = new UrlPathHelper().getPathWithinApplication(httpServletRequest);
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String requestId = request.getHeader(REQUEST_ID);
+
+        String path = new UrlPathHelper().getPathWithinApplication(request);
         if (path.startsWith(applicationPath)) {
             if (requestId == null || requestId.isEmpty()) {
                 requestId = UUID.randomUUID().toString();
@@ -41,22 +46,13 @@ public class RequestIdFilter implements Filter {
             } else {
                 LOG.trace("Request ID header found: [{}].", requestId);
             }
-
             MDC.put(REQUEST_ID, requestId);
-            httpServletResponse.setHeader(REQUEST_ID, requestId);
+            response.setHeader(REQUEST_ID, requestId);
         }
         try {
             filterChain.doFilter(request, response);
         } finally {
             MDC.remove(REQUEST_ID);
         }
-    }
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-    }
-
-    @Override
-    public void destroy() {
     }
 }

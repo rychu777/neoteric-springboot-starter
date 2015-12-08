@@ -56,6 +56,6 @@ public class RequestAutoConfiguration {
                 throw new Exception(filtersFormat + " not supported.");
         }
 
-        return new FilterRegistrationBean(new RequestParametersFilter(requestMapper));
+        return new FilterRegistrationBean(new RequestParametersFilter(requestMapper, jerseyProperties.getApplicationPath()));
     }
 }

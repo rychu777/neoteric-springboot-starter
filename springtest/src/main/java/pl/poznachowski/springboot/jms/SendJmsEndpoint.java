@@ -1,36 +1,34 @@
-package pl.poznachowski.springboot;
+package pl.poznachowski.springboot.jms;
 
-import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
+import pl.poznachowski.springboot.SampleEndpoint;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import java.time.ZonedDateTime;
 
 @Component
-@Path("/v1/endpoint")
+@Path("/v1/jms")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Api(tags = "/v1/endpoint")
-public class SampleEndpoint {
+public class SendJmsEndpoint {
 
     private static final Logger LOG = LoggerFactory.getLogger(SampleEndpoint.class);
 
     @Autowired
-    ExternalServiceAPI externalServiceAPI;
+    JmsTemplate jmsTemplate;
 
     @GET
-    public Response get() {
-        LOG.error("ERROR");
-
-        TestJSON json = externalServiceAPI.get();
-        LOG.info("RETURNED FROM OTHER SERVICE: {}", json);
-        return Response.ok(json).build();
+    public String sendJms() {
+        LOG.warn("Template: {}", jmsTemplate.getConnectionFactory().getClass());
+        jmsTemplate.send("testQueue", session ->  session.createTextMessage(ZonedDateTime.now().toString()));
+        return "success";
     }
 }

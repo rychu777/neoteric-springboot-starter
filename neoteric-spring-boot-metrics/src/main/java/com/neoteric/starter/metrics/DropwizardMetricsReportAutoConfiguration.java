@@ -2,6 +2,7 @@ package com.neoteric.starter.metrics;
 
 import com.codahale.metrics.MetricRegistry;
 import com.neoteric.starter.Constants;
+import com.neoteric.starter.metrics.report.elastic.ElasticsearchConnectionException;
 import com.neoteric.starter.metrics.report.elastic.ElasticsearchReporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,14 +42,16 @@ public class DropwizardMetricsReportAutoConfiguration {
         ElasticsearchReporter registerElasticSearchReporter(MetricRegistry metricRegistry) {
             MetricsReportProperties.ElasticSearch elasticProperties = metricsReportProperties.getElastic();
             try {
-                return ElasticsearchReporter.forRegistry(metricRegistry)
+                ElasticsearchReporter reporter = ElasticsearchReporter.forRegistry(metricRegistry)
                         .hosts(elasticProperties.getHosts())
                         .timeout(elasticProperties.getTimeout())
                         .prefixedWith(elasticProperties.getPrefix())
                         .convertRatesTo(elasticProperties.getRatesTimeUnit())
                         .convertDurationsTo(elasticProperties.getDuriationsTimeUnit())
                         .build();
-            } catch (IOException e) {
+                LOG.debug("{}Reporter: {}", reporter);
+                return reporter;
+            } catch (ElasticsearchConnectionException e) {
                 LOG.error("Unable to create ElasticsearchReporter", e);
                 return null;
             }

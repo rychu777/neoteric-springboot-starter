@@ -3,6 +3,11 @@ package com.neoteric.starter.jms.listeners;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.jms.annotation.JmsListener;
 
+import java.lang.annotation.*;
+
+@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
 @JmsListener(containerFactory = "queueJmsContainerFactory", destination = "testQueue")
 public @interface QueueJmsListener {
 

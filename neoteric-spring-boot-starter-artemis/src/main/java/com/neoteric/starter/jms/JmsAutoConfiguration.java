@@ -1,6 +1,7 @@
 package com.neoteric.starter.jms;
 
 import com.neoteric.starter.jms.artemis.PreconfiguredDefaultJmsListenerContainerFactory;
+import com.neoteric.starter.jms.listeners.DefaultErrorHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -36,9 +37,8 @@ public class JmsAutoConfiguration {
     DefaultJmsListenerContainerFactory queueJmsContainerFactory(ConnectionFactory connectionFactory) {
         DefaultJmsListenerContainerFactory listener =
                 new PreconfiguredDefaultJmsListenerContainerFactory(jmsProperties, transactionManager, destinationResolver);
-
         listener.setConnectionFactory(connectionFactory);
-        listener.setSessionAcknowledgeMode(javax.jms.Session.CLIENT_ACKNOWLEDGE);
+        listener.setErrorHandler(new DefaultErrorHandler());
         listener.setPubSubDomain(false);
         return listener;
     }

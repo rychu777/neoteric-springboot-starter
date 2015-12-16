@@ -17,11 +17,11 @@ public class PreconfiguredDefaultJmsListenerContainerFactory
                                                            DestinationResolver destinationResolver) {
         JmsProperties.Listener listenerProps = jmsProperties.getListener();
         this.setAutoStartup(listenerProps.isAutoStartup());
-//        if (transactionManager != null) {
-//            this.setTransactionManager(transactionManager);
-//        } else {
-//            this.setSessionTransacted(true);
-//        }
+        if (transactionManager != null) {
+            this.setTransactionManager(transactionManager);
+        } else {
+            this.setSessionTransacted(true);
+        }
         if (destinationResolver != null) {
             this.setDestinationResolver(destinationResolver);
         }

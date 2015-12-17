@@ -1,16 +1,13 @@
 package com.neoteric.starter.jms.artemis;
 
 import com.neoteric.starter.jms.JmsProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.neoteric.starter.jms.listeners.DefaultErrorHandler;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 public class PreconfiguredDefaultJmsListenerContainerFactory
         extends DefaultJmsListenerContainerFactory {
-
-    private static final Logger LOG = LoggerFactory.getLogger(PreconfiguredDefaultJmsListenerContainerFactory.class);
 
     public PreconfiguredDefaultJmsListenerContainerFactory(JmsProperties jmsProperties,
                                                            JtaTransactionManager transactionManager,
@@ -32,7 +29,6 @@ public class PreconfiguredDefaultJmsListenerContainerFactory
         if (concurrency != null) {
             this.setConcurrency(concurrency);
         }
-
-//        this.setClientId(listenerProps.getClientId());
+        this.setErrorHandler(new DefaultErrorHandler());
     }
 }

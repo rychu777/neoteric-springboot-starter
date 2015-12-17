@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.DeliveryMode;
 
 @Configuration
 @ConditionalOnClass(JmsTemplate.class)
@@ -27,6 +29,9 @@ public class JmsAutoConfiguration {
     @Autowired
     JmsProperties jmsProperties;
 
+    @Autowired
+    private ConnectionFactory connectionFactory;
+
     @Autowired(required = false)
     private DestinationResolver destinationResolver;
 
@@ -34,13 +39,26 @@ public class JmsAutoConfiguration {
     private JtaTransactionManager transactionManager;
 
     @Bean
-    DefaultJmsListenerContainerFactory queueJmsContainerFactory(ConnectionFactory connectionFactory) {
+    DefaultJmsListenerContainerFactory queueJmsContainerFactory() {
         DefaultJmsListenerContainerFactory listener =
                 new PreconfiguredDefaultJmsListenerContainerFactory(jmsProperties, transactionManager, destinationResolver);
         listener.setConnectionFactory(connectionFactory);
-        listener.setErrorHandler(new DefaultErrorHandler());
         listener.setPubSubDomain(false);
         return listener;
+    }
+
+    @Bean
+    public JmsTemplate jmsQueueTemplate() {
+        JmsTemplate jmsTemplate = new PreconfiguredJmsTemplate(connectionFactory, destinationResolver);
+        jmsTemplate.setPubSubDomain(false);
+        return jmsTemplate;
+    }
+
+    @Bean
+    public JmsTemplate jmsTopicTemplate() {
+        JmsTemplate jmsTemplate = new PreconfiguredJmsTemplate(connectionFactory, destinationResolver);
+        jmsTemplate.setPubSubDomain(true);
+        return jmsTemplate;
     }
 
 }

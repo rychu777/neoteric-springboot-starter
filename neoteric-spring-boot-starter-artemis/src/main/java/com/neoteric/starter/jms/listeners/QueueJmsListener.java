@@ -5,10 +5,10 @@ import org.springframework.jms.annotation.JmsListener;
 
 import java.lang.annotation.*;
 
-@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@JmsListener(containerFactory = "queueJmsContainerFactory", destination = "testQueue")
+@JmsListener(containerFactory = "queueJmsContainerFactory", destination = "")
 public @interface QueueJmsListener {
 
     /**

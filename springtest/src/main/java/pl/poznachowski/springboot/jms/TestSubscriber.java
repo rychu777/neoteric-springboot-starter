@@ -3,7 +3,6 @@ package pl.poznachowski.springboot.jms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.annotation.JmsListener;
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,8 +17,8 @@ public class TestSubscriber {
 //        throw new RuntimeException("XYZ");
 //    }
 
-    @JmsListener(containerFactory = "queueJmsContainerFactory", destination = "testQueue")
-    private void handleMessage2(Message<String> message) {
+    @JmsListener(destination = "testQueue")
+    private void handleMessage2(String message) {
         LOG.warn("CYCKI: {}", message);
     }
 }

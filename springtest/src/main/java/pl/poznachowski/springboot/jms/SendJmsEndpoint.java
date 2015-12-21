@@ -1,18 +1,18 @@
 package pl.poznachowski.springboot.jms;
 
+import com.neoteric.starter.jms.producers.QueueMessageProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import pl.poznachowski.springboot.SampleEndpoint;
+import pl.poznachowski.springboot.TestJSON;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.time.ZonedDateTime;
 
 @Component
 @Path("/v1/jms")
@@ -23,12 +23,11 @@ public class SendJmsEndpoint {
     private static final Logger LOG = LoggerFactory.getLogger(SampleEndpoint.class);
 
     @Autowired
-    JmsTemplate jmsTemplate;
+    QueueMessageProducer queueMessageProducer;
 
     @GET
     public String sendJms() {
-        LOG.warn("Template: {}", jmsTemplate.getConnectionFactory().getClass());
-        jmsTemplate.send("testQueue", session ->  session.createTextMessage(ZonedDateTime.now().toString()));
+        queueMessageProducer.send("testQueue", new TestJSON("aaa", "bbb"));
         return "success";
     }
 }

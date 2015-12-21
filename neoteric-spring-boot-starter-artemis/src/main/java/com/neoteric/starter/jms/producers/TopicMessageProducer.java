@@ -1,12 +1,12 @@
 package com.neoteric.starter.jms.producers;
 
-import com.neoteric.starter.jms.QueueJmsTemplate;
+import com.neoteric.starter.jms.TopicJmsTemplate;
 import org.springframework.jms.core.JmsTemplate;
 
-public final class QueueMessageProducer extends AbstractMessageProducer {
+public class TopicMessageProducer extends AbstractMessageProducer {
 
     @Override
-    @QueueJmsTemplate
+    @TopicJmsTemplate
     protected void setJmsTemplate(JmsTemplate jmsTemplate) {
         super.jmsTemplate = jmsTemplate;
     }

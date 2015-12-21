@@ -1,12 +1,14 @@
 package com.neoteric.starter.request.tracing;
 
+import com.neoteric.starter.Constants;
 import org.jboss.logging.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.UrlPathHelper;
 
-import javax.servlet.*;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,7 +22,6 @@ import java.util.UUID;
 @WebFilter
 public class RequestIdFilter extends OncePerRequestFilter {
 
-    public static final String REQUEST_ID = "REQUEST_ID";
     private static final Logger LOG = LoggerFactory.getLogger(RequestIdFilter.class);
     private final String applicationPath;
 
@@ -36,7 +37,7 @@ public class RequestIdFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String requestId = request.getHeader(REQUEST_ID);
+        String requestId = request.getHeader(Constants.REQUEST_ID);
 
         String path = new UrlPathHelper().getPathWithinApplication(request);
         if (path.startsWith(applicationPath)) {
@@ -46,13 +47,13 @@ public class RequestIdFilter extends OncePerRequestFilter {
             } else {
                 LOG.trace("Request ID header found: [{}].", requestId);
             }
-            MDC.put(REQUEST_ID, requestId);
-            response.setHeader(REQUEST_ID, requestId);
+            MDC.put(Constants.REQUEST_ID, requestId);
+            response.setHeader(Constants.REQUEST_ID, requestId);
         }
         try {
             filterChain.doFilter(request, response);
         } finally {
-            MDC.remove(REQUEST_ID);
+            MDC.remove(Constants.REQUEST_ID);
         }
     }
 }

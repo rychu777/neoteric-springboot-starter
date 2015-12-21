@@ -1,20 +1,23 @@
 package com.neoteric.starter.jms;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.neoteric.starter.jms.artemis.PreconfiguredDefaultJmsListenerContainerFactory;
+import com.neoteric.starter.jms.artemis.JmsContainerFactories;
+import com.neoteric.starter.jms.artemis.converter.JacksonAwareMessageConverter;
+import com.neoteric.starter.jms.listeners.DefaultErrorHandler;
 import com.neoteric.starter.jms.producers.QueueMessageProducer;
+import com.neoteric.starter.jms.producers.TopicMessageProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
-import org.springframework.jms.support.converter.MessageType;
 import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
@@ -25,6 +28,7 @@ import java.util.Map;
 @Configuration
 @ConditionalOnClass(JmsTemplate.class)
 @ConditionalOnBean(ConnectionFactory.class)
+@AutoConfigureBefore(org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration.class)
 @EnableConfigurationProperties(JmsProperties.class)
 public class JmsAutoConfiguration {
 
@@ -48,27 +52,87 @@ public class JmsAutoConfiguration {
     Map<String, Class<?>> jacksonMessageMappings;
 
     @Autowired
-    MappingJackson2MessageConverter jacksonMessageConverter;
+    JacksonAwareMessageConverter jacksonMessageConverter;
 
     @Bean
-    DefaultJmsListenerContainerFactory queueJmsContainerFactory() {
-        DefaultJmsListenerContainerFactory listener =
-                new PreconfiguredDefaultJmsListenerContainerFactory(jmsProperties, transactionManager, destinationResolver);
-        listener.setConnectionFactory(connectionFactory);
-        listener.setPubSubDomain(false);
-        return listener;
-    }
-
-    @Bean
-    MappingJackson2MessageConverter jacksonMessageConverter(ObjectMapper objectMapper) {
-        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-        converter.setObjectMapper(objectMapper);
-        converter.setTargetType(MessageType.TEXT);
+    JacksonAwareMessageConverter jacksonMessageConverter(ObjectMapper objectMapper) {
+        JacksonAwareMessageConverter converter = new JacksonAwareMessageConverter(objectMapper);
         converter.setTypeIdPropertyName(TYPE_PROPERTY_NAME);
         if (jacksonMessageMappings != null) {
             converter.setTypeIdMappings(jacksonMessageMappings);
         }
         return converter;
+    }
+
+    @Bean(name = JmsContainerFactories.QUEUE)
+    DefaultJmsListenerContainerFactory queueJmsContainerFactory() {
+        DefaultJmsListenerContainerFactory listener = new DefaultJmsListenerContainerFactory();
+        configureListener(listener);
+        listener.setPubSubDomain(false);
+        return listener;
+    }
+
+    @Bean(name = JmsContainerFactories.TOPIC_DURABLE_SHARED)
+    DefaultJmsListenerContainerFactory topicDurableSharedJmsContainerFactory() {
+        DefaultJmsListenerContainerFactory listener = new DefaultJmsListenerContainerFactory();
+        configureListener(listener);
+        listener.setPubSubDomain(true);
+        listener.setSubscriptionDurable(true);
+        listener.setSubscriptionShared(true);
+        return listener;
+    }
+
+    @Bean(name = JmsContainerFactories.TOPIC_DURABLE)
+    DefaultJmsListenerContainerFactory topicDurableJmsContainerFactory() {
+        DefaultJmsListenerContainerFactory listener = new DefaultJmsListenerContainerFactory();
+        configureListener(listener);
+        listener.setPubSubDomain(true);
+        listener.setSubscriptionDurable(true);
+        listener.setSubscriptionShared(false);
+        return listener;
+    }
+
+    @Bean(name = JmsContainerFactories.TOPIC_SHARED)
+    DefaultJmsListenerContainerFactory topicSharedJmsContainerFactory() {
+        DefaultJmsListenerContainerFactory listener = new DefaultJmsListenerContainerFactory();
+        configureListener(listener);
+        listener.setPubSubDomain(true);
+        listener.setSubscriptionDurable(false);
+        listener.setSubscriptionShared(true);
+        return listener;
+    }
+
+    @Bean(name = JmsContainerFactories.TOPIC)
+    DefaultJmsListenerContainerFactory topicJmsContainerFactory() {
+        DefaultJmsListenerContainerFactory listener = new DefaultJmsListenerContainerFactory();
+        configureListener(listener);
+        listener.setPubSubDomain(true);
+        listener.setSubscriptionDurable(false);
+        listener.setSubscriptionShared(false);
+        return listener;
+    }
+
+    private void configureListener(DefaultJmsListenerContainerFactory listener) {
+        JmsProperties.Listener listenerProps = jmsProperties.getListener();
+        listener.setAutoStartup(listenerProps.isAutoStartup());
+        if (transactionManager != null) {
+            listener.setTransactionManager(transactionManager);
+        } else {
+            listener.setSessionTransacted(true);
+        }
+        if (destinationResolver != null) {
+            listener.setDestinationResolver(destinationResolver);
+        }
+        if (listenerProps.getAcknowledgeMode() != null) {
+            listener.setSessionAcknowledgeMode(listenerProps.getAcknowledgeMode().getMode());
+        }
+        String concurrency = listenerProps.formatConcurrency();
+        if (concurrency != null) {
+            listener.setConcurrency(concurrency);
+        }
+        listener.setErrorHandler(new DefaultErrorHandler());
+        listener.setConnectionFactory(connectionFactory);
+        listener.setMessageConverter(jacksonMessageConverter);
     }
 
     @Bean
@@ -98,5 +162,26 @@ public class JmsAutoConfiguration {
     @Bean
     QueueMessageProducer queueMessageProducer() {
         return new QueueMessageProducer();
+    }
+
+    @Bean
+    TopicMessageProducer topicMessageProducer() {
+        return new TopicMessageProducer();
+    }
+
+    @ConditionalOnClass(JmsMessagingTemplate.class)
+    @ConditionalOnMissingBean(JmsMessagingTemplate.class)
+    protected static class MessagingTemplateConfiguration {
+
+        @Bean
+        public JmsMessagingTemplate jmsQueueMessagingTemplate(@Qualifier("jmsQueueTemplate") JmsTemplate jmsTemplate) {
+            return new JmsMessagingTemplate(jmsTemplate);
+        }
+
+        @Bean
+        public JmsMessagingTemplate jmsTopicMessagingTemplate(@Qualifier("jmsTopicTemplate") JmsTemplate jmsTemplate) {
+            return new JmsMessagingTemplate(jmsTemplate);
+        }
+
     }
 }

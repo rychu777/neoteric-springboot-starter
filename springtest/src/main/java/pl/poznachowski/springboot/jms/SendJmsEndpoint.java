@@ -1,6 +1,7 @@
 package pl.poznachowski.springboot.jms;
 
 import com.neoteric.starter.jms.producers.QueueMessageProducer;
+import com.neoteric.starter.jms.producers.TopicMessageProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,21 @@ public class SendJmsEndpoint {
     @Autowired
     QueueMessageProducer queueMessageProducer;
 
+    @Autowired
+    TopicMessageProducer topicMessageProducer;
+
+
     @GET
-    public String sendJms() {
+    @Path("/queue")
+    public String sendToQueue() {
         queueMessageProducer.send("testQueue", new TestJSON("aaa", "bbb"));
+        return "success";
+    }
+
+    @GET
+    @Path("/topic")
+    public String sendToTopic() {
+        topicMessageProducer.send("testTopic", new TestJSON("xxx", "xxx"));
         return "success";
     }
 }

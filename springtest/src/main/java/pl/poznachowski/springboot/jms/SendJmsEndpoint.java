@@ -33,7 +33,7 @@ public class SendJmsEndpoint {
     @GET
     @Path("/queue")
     public String sendToQueue() {
-        queueMessageProducer.send("testQueue", new TestJSON("aaa", "bbb"));
+        queueMessageProducer.send("queue2", new TestJSON("aaa", "bbb"));
         return "success";
     }
 

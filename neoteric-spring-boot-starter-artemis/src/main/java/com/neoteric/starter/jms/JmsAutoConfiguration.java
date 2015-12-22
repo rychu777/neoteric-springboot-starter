@@ -4,8 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neoteric.starter.jms.artemis.JmsContainerFactories;
 import com.neoteric.starter.jms.artemis.converter.JacksonAwareMessageConverter;
 import com.neoteric.starter.jms.listeners.DefaultErrorHandler;
+import com.neoteric.starter.jms.listeners.SetupMissingDestinationsPostProcessor;
 import com.neoteric.starter.jms.producers.QueueMessageProducer;
 import com.neoteric.starter.jms.producers.TopicMessageProducer;
+import org.apache.activemq.artemis.api.core.client.ActiveMQClient;
+import org.apache.activemq.artemis.api.core.client.ClientSessionFactory;
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -167,6 +171,11 @@ public class JmsAutoConfiguration {
     @Bean
     TopicMessageProducer topicMessageProducer() {
         return new TopicMessageProducer();
+    }
+
+    @Bean
+    SetupMissingDestinationsPostProcessor setupDestinationsPostProcessor() {
+        return new SetupMissingDestinationsPostProcessor();
     }
 
     @ConditionalOnClass(JmsMessagingTemplate.class)

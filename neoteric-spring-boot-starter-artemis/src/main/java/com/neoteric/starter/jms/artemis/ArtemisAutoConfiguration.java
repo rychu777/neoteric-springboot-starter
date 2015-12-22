@@ -1,6 +1,11 @@
 package com.neoteric.starter.jms.artemis;
 
 import com.neoteric.starter.jms.JmsAutoConfiguration;
+import org.apache.activemq.artemis.api.core.TransportConfiguration;
+import org.apache.activemq.artemis.api.jms.ActiveMQJMSClient;
+import org.apache.activemq.artemis.api.jms.JMSFactoryType;
+import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
+import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -12,6 +17,9 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @AutoConfigureBefore({org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration.class, JmsAutoConfiguration.class})
@@ -24,8 +32,9 @@ public class ArtemisAutoConfiguration {
 
     @Bean
     public ActiveMQConnectionFactory jmsConnectionFactory() {
-        ActiveMQConnectionFactory connectionFactory = new ArtemisConnectionFactoryFactory(artemisProperties)
-                .createConnectionFactory(ActiveMQConnectionFactory.class);
+        TransportConfiguration transportConfiguration = createTransportConfiguration();
+        ActiveMQConnectionFactory connectionFactory = ActiveMQJMSClient
+                .createConnectionFactoryWithoutHA(JMSFactoryType.CF, transportConfiguration);
         connectionFactory.setUser(artemisProperties.getUsername());
         connectionFactory.setPassword(artemisProperties.getPassword());
         connectionFactory.setReconnectAttempts(artemisProperties.getMaxRetries());
@@ -40,5 +49,12 @@ public class ArtemisAutoConfiguration {
             connectionFactory.setMaxRetryInterval(expProps.getMaximumInterval());
         }
         return connectionFactory;
+    }
+
+    private TransportConfiguration createTransportConfiguration() {
+        Map<String, Object> params = new HashMap<>();
+        params.put(TransportConstants.HOST_PROP_NAME, artemisProperties.getHost());
+        params.put(TransportConstants.PORT_PROP_NAME, artemisProperties.getPort());
+        return new TransportConfiguration(NettyConnectorFactory.class.getName(), params);
     }
 }

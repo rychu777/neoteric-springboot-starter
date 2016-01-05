@@ -1,3 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.neoteric.starter.rabbit.RabbitRetryAutoConfiguration,\
 com.neoteric.starter.jms.artemis.ArtemisAutoConfiguration,\
 com.neoteric.starter.jms.JmsAutoConfiguration

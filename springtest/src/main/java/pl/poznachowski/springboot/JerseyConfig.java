@@ -2,7 +2,7 @@ package pl.poznachowski.springboot;
 
 import com.neoteric.starter.jersey.AbstractJerseyConfig;
 import org.springframework.stereotype.Component;
-import pl.poznachowski.springboot.jms.SendRabbitEndpoint;
+import pl.poznachowski.springboot.rabbit.SendRabbitEndpoint;
 
 @Component
 public class JerseyConfig extends AbstractJerseyConfig {

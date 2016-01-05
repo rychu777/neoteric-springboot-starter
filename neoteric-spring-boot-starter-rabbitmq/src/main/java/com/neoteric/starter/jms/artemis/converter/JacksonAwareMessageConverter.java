@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Based on org.springframework.jms.support.converter.MappingJackson2MessageConverter
+ * Based on org.springframework.rabbit.support.converter.MappingJackson2MessageConverter
  * Marshals to TEXT MessageType
  */
 public class JacksonAwareMessageConverter implements MessageConverter, BeanClassLoaderAware {

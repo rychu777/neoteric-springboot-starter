@@ -1,4 +1,4 @@
-package pl.poznachowski.springboot.jms;
+package pl.poznachowski.springboot.rabbit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 @Component
-@Path("/v1/jms")
+@Path("/v1/rabbit")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SendRabbitEndpoint {
@@ -28,7 +28,7 @@ public class SendRabbitEndpoint {
     @GET
     @Path("/queue")
     public String sendToQueue() {
-        rabbitTemplate.send("test.queue", "", MessageBuilder.withBody("testBody".getBytes()).build());
+        rabbitTemplate.send(RabbitConfiguration.EXCHANGE_NAME, "", MessageBuilder.withBody("testBody".getBytes()).build());
         return "success";
     }
 

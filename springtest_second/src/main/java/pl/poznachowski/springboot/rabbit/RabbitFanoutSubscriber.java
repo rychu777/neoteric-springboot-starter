@@ -32,7 +32,6 @@ public class RabbitFanoutSubscriber {
             exchange = @Exchange(value = EXCHANGE_NAME, durable = "true", type = ExchangeTypes.FANOUT)))
     private void handleMessage2(Message message) {
         LOG.warn("SHOULD RETRY: {}", message);
-        throw new RuntimeException("AAA");
     }
 
     @RabbitListener(bindings = @QueueBinding(

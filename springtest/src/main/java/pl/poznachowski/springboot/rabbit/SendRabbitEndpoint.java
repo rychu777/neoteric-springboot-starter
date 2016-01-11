@@ -1,9 +1,9 @@
 package pl.poznachowski.springboot.rabbit;
 
+import com.neoteric.starter.rabbit.TracedRabbitTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.MessageBuilder;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import pl.poznachowski.springboot.SampleEndpoint;
@@ -23,7 +23,7 @@ public class SendRabbitEndpoint {
     private static final Logger LOG = LoggerFactory.getLogger(SampleEndpoint.class);
 
     @Autowired
-    RabbitTemplate rabbitTemplate;
+    TracedRabbitTemplate rabbitTemplate;
 
     @GET
     @Path("/queue")

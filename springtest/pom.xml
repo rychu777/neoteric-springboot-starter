@@ -56,13 +56,11 @@
             <version>0.1.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>com.neoteric</groupId>
             <artifactId>neoteric-spring-boot-starter-rabbitmq</artifactId>
             <version>0.1.0-SNAPSHOT</version>
         </dependency>
-
         <!--
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -81,10 +79,46 @@
             </resource>
         </resources>
 
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <requiresUnpack>
+                        <dependency>
+                            <groupId>io.swagger</groupId>
+                            <artifactId>swagger-jaxrs</artifactId>
+                        </dependency>
+                    </requiresUnpack>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <configuration>
+                    <dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>set-system-properties</goal>
+                        </goals>
+                        <configuration>
+                            <properties>
+                                <property>
+                                    <name>logging.file</name>
+                                    <value>${project.name}-${project.version}.log</value>
+                                </property>
+                            </properties>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

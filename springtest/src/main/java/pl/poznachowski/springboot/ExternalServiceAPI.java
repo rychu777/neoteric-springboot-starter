@@ -5,7 +5,7 @@ import org.springframework.cloud.netflix.feign.FeignClient;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-@FeignClient(serviceId = "testService")
+@FeignClient(value = "http://localhost:9099", url = "http://localhost:9099")
 public interface ExternalServiceAPI {
 
     @GET

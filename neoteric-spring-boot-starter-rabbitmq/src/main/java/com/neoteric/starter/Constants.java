@@ -1,4 +1,4 @@
-package com.neoteric.starter.jms;
+package com.neoteric.starter;
 
 public final class Constants {
 

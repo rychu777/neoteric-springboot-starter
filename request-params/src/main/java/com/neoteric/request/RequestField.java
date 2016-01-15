@@ -25,7 +25,7 @@ public class RequestField implements RequestObject {
 
     @Override
     public String toString() {
-        return "[" + fieldName + "]";
+        return "<" + fieldName + ">";
     }
 
 

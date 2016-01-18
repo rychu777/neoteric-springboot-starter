@@ -21,7 +21,7 @@ public class OperatorTypeTest {
         assertThat(OperatorType.EQUAL).isEqualTo(OperatorType.fromString("$eq"));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionOnIncorrectNameForOperatorType() throws Exception {
         OperatorType.fromString("foo");
     }

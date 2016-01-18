@@ -2,9 +2,8 @@ package com.neoteric.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,9 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class FiltersParserTest {
-
-    private final static ObjectMapper MAPPER = new ObjectMapper();
-    private static final Logger LOG = LoggerFactory.getLogger(FiltersParserTest.class);
 
     @Test
     public void shouldProduceEmptyFilters() throws Exception {
@@ -78,17 +74,33 @@ public class FiltersParserTest {
                 .containsEntry(RequestField.of("surname"), ImmutableMap.of(RequestOperator.of(OperatorType.STARTS_WITH), "Doe"));
     }
 
-    /*
-        @Test
-        public void testAllOptions() throws Exception {
-            Map<String, Object> rawFilters = readFiltersFromResources("TestAllOptions.json");
+    @Test
+    public void testMultipleNestedOperators() throws Exception {
+        Map<String, Object> rawFilters = readFiltersFromResources("MultipleNestedOperators.json");
 
-            Map<RequestObject, Object> filters = FiltersParser.parseFilters(rawFilters);
-            assertThat(filters)
-                    .hasSize(1)
-                    .containsOnlyKeys(RequestField.of("examples"));
-        }
-    */
+        Map<RequestObject, Object> filters = FiltersParser.parseFilters(rawFilters);
+        assertThat(filters)
+                .hasSize(3)
+                .containsOnlyKeys(RequestField.of("name"), RequestField.of("lastName"), RequestLogicalOperator.of(LogicalOperatorType.OR));
+
+        assertThat((Map) filters.get(RequestField.of("name")))
+                .hasSize(2)
+                .containsEntry(RequestOperator.of(OperatorType.STARTS_WITH), "John")
+                .containsEntry(RequestOperator.of(OperatorType.IN), Lists.newArrayList("Johnny", "Abc"));
+
+        assertThat((Map) filters.get(RequestField.of("lastName")))
+                .hasSize(1)
+                .containsEntry(RequestLogicalOperator.of(LogicalOperatorType.OR), ImmutableMap.of(
+                        RequestOperator.of(OperatorType.STARTS_WITH), "John",
+                        RequestOperator.of(OperatorType.IN), Lists.newArrayList("Johnny", "Abc")
+                ));
+
+        assertThat((Map) filters.get(RequestLogicalOperator.of(LogicalOperatorType.OR)))
+                .hasSize(2)
+                .containsEntry(RequestField.of("name"), ImmutableMap.of(RequestOperator.of(OperatorType.EQUAL), "John"))
+                .containsEntry(RequestField.of("last"), ImmutableMap.of(RequestOperator.of(OperatorType.EQUAL), "Doe"));
+    }
+
     private Map<String, Object> readFiltersFromResources(String resourceName) throws IOException {
         byte[] jsonBytes = Files.readAllBytes(Paths.get("src/test/resources/requests/" + resourceName));
         ObjectMapper mapper = new ObjectMapper();

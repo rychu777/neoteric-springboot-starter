@@ -107,6 +107,6 @@ public final class FiltersParser {
     }
 
     private static boolean isNotFieldNorLogicalOperator(String key) {
-        return !(!key.startsWith("$") || LogicalOperatorType.contains(key));
+        return !(isField(key) || LogicalOperatorType.contains(key));
     }
 }

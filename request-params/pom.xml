@@ -17,6 +17,7 @@
         <junit.version>4.11</junit.version>
         <assertj-core.version>3.2.0</assertj-core.version>
         <guava.version>15.0</guava.version>
+        <equalsverifier.version>1.7.2</equalsverifier.version>
     </properties>
 
     <dependencies>
@@ -57,6 +58,12 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson-core-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>nl.jqno.equalsverifier</groupId>
+            <artifactId>equalsverifier</artifactId>
+            <version>${equalsverifier.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -45,7 +45,7 @@ public class RequestLogicalOperator implements RequestObject {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hash(logicalOperator);
     }
 }

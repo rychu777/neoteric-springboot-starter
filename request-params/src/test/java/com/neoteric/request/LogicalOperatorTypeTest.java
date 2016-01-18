@@ -1,6 +1,5 @@
 package com.neoteric.request;
 
-import com.neoteric.request.LogicalOperatorType;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +21,7 @@ public class LogicalOperatorTypeTest {
         assertThat(LogicalOperatorType.OR).isEqualTo(LogicalOperatorType.fromString("$or"));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionOnIncorrectNameForLogicalOperatorType() throws Exception {
         LogicalOperatorType.fromString("or");
     }

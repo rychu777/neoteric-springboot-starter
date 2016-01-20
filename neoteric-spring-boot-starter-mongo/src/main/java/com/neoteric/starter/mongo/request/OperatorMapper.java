@@ -1,4 +1,4 @@
-package com.neoteric.starter.mongo;
+package com.neoteric.starter.mongo.request;
 
 import com.google.common.collect.ImmutableMap;
 import com.neoteric.request.OperatorType;

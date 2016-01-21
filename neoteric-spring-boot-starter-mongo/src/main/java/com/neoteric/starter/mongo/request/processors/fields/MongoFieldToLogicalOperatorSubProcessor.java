@@ -2,6 +2,7 @@ package com.neoteric.starter.mongo.request.processors.fields;
 
 import com.google.common.collect.Lists;
 import com.neoteric.request.*;
+import com.neoteric.starter.mongo.request.FieldMapper;
 import org.springframework.data.mongodb.core.query.Criteria;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public enum MongoFieldToLogicalOperatorSubProcessor implements MongoFieldSubProc
     }
 
     @Override
-    public Criteria build(RequestField field, RequestLogicalOperator logicalOperator, Object logicalOperatorObjectValues) {
+    public Criteria build(RequestField field, RequestLogicalOperator logicalOperator, Object logicalOperatorObjectValues, FieldMapper fieldMapper) {
         if (!(logicalOperatorObjectValues instanceof Map)) {
             throw new IllegalArgumentException("LogicalOperator expect Map as argument, but get: " + logicalOperatorObjectValues);
         }
@@ -29,7 +30,8 @@ public enum MongoFieldToLogicalOperatorSubProcessor implements MongoFieldSubProc
             if (!MongoFieldToOperatorSubProcessor.INSTANCE.apply(requestObject.getType())) {
                 throw new IllegalArgumentException(requestObject.getType() + " cannot be applied to LogicalOperator in non root.");
             }
-            Criteria whereCriteria = MongoFieldToOperatorSubProcessor.INSTANCE.build(field, (RequestOperator) requestObject, operatorValue);
+            Criteria whereCriteria = MongoFieldToOperatorSubProcessor.INSTANCE
+                    .build(field, (RequestOperator) requestObject, operatorValue, fieldMapper);
             criteriaElements.add(whereCriteria);
         });
         return LOGICAL_OPERATORS.get(logicalOperator.getOperator()).apply(new Criteria(), criteriaElements.stream().toArray(Criteria[]::new));

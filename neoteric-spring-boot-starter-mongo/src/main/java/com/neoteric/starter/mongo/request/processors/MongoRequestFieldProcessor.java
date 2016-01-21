@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.neoteric.request.RequestField;
 import com.neoteric.request.RequestObject;
 import com.neoteric.request.RequestObjectType;
+import com.neoteric.starter.mongo.request.FieldMapper;
 import com.neoteric.starter.mongo.request.processors.fields.MongoFieldSubProcessor;
 import com.neoteric.starter.mongo.request.processors.fields.MongoFieldToLogicalOperatorSubProcessor;
 import com.neoteric.starter.mongo.request.processors.fields.MongoFieldToOperatorSubProcessor;
@@ -27,17 +28,16 @@ public enum MongoRequestFieldProcessor implements MongoRequestObjectProcessor<Re
     }
 
     @Override
-    public List<Criteria> build(RequestField field, Map<RequestObject, Object> fieldValues) {
+    public List<Criteria> build(RequestField field, Map<RequestObject, Object> fieldValues, FieldMapper fieldMapper) {
         List<Criteria> allFieldCriteria = Lists.newArrayList();
 
-        //TODO: Can be only one logical operator within field
-        // NOTE: to be reconsidered, map will allow only for one logical operator in map
+        //TODO: Can be only one logical operator within field (since map will not allow duplicates)
         fieldValues.forEach((requestObject, operatorValue) -> {
             Criteria criteria = FIELD_SUB_PROCESSORS.stream()
                     .filter(mongoFieldSubProcessor -> mongoFieldSubProcessor.apply(requestObject.getType()))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException(requestObject.getType() + " cannot be applied to Field."))
-                    .build(field, requestObject, operatorValue);
+                    .build(field, requestObject, operatorValue, fieldMapper);
             allFieldCriteria.add(criteria);
         });
 

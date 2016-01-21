@@ -1,39 +1,22 @@
-package com.neoteric.starter.mongo;
+package com.neoteric.starter.mongo.request;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.neoteric.request.*;
-import com.neoteric.starter.mongo.request.RequestParamsCriteriaBuilder;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.query.Criteria;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class RequestParamsCriteriaBuilderTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequestParamsCriteriaBuilderTest.class);
-
-    @Test
-    public void testCriteria() throws Exception {
-
-        Criteria criteria = new Criteria().andOperator(
-                new Criteria().orOperator(
-                        Criteria.where("name").is("John"),
-                        Criteria.where("last").is("Doe")),
-                Criteria.where("createdAt").lt("timestamp"),
-                Criteria.where("createdAt").gt("t4"),
-                new Criteria().orOperator(
-                        Criteria.where("updatedAt").lt("t1"),
-                        Criteria.where("updatedAt").gt("t2")),
-                Criteria.where("updatedAt").lt("timestamp3"));
-        LOG.error("CRITERIA: {}", criteria.getCriteriaObject());
-
-    }
 
     @Test
     public void testEmptyFiltersShouldProduceEmptyQuery() throws Exception {
@@ -51,9 +34,7 @@ public class RequestParamsCriteriaBuilderTest {
                         ImmutableMap.of(RequestOperator.of(OperatorType.STARTS_WITH), "John")
                 ));
         Criteria result = RequestParamsCriteriaBuilder.newBuilder().build(filters);
-        assertThat(result).isEqualTo(new Criteria().andOperator(
-                new Criteria().orOperator(Criteria.where("name").regex("John"))
-        ));
+        assertThat(result).isEqualTo(new Criteria().orOperator(Criteria.where("name").regex("^John", "i")));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -87,9 +68,7 @@ public class RequestParamsCriteriaBuilderTest {
                         RequestField.of("count"), ImmutableMap.of(RequestOperator.of(OperatorType.LESS_THAN), 5)
                 ));
         Criteria result = RequestParamsCriteriaBuilder.newBuilder().build(filters);
-        assertThat(result).isEqualTo(new Criteria().andOperator(
-                new Criteria().orOperator(Criteria.where("count").lt(5))
-        ));
+        assertThat(result).isEqualTo(new Criteria().orOperator(Criteria.where("count").lt(5)));
     }
 
     // starting from Operator
@@ -106,7 +85,7 @@ public class RequestParamsCriteriaBuilderTest {
                 ImmutableMap.of(RequestOperator.of(OperatorType.STARTS_WITH), "John")
         );
         Criteria result = RequestParamsCriteriaBuilder.newBuilder().build(filters);
-        assertThat(result).isEqualTo(new Criteria().andOperator(Criteria.where("name").regex("John")));
+        assertThat(result).isEqualTo(Criteria.where("name").regex("^John", "i"));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -129,10 +108,9 @@ public class RequestParamsCriteriaBuilderTest {
         );
 
         Criteria result = RequestParamsCriteriaBuilder.newBuilder().build(filters);
-        assertThat(result).isEqualTo(new Criteria().andOperator(
-                new Criteria().orOperator(
-                        Criteria.where("name").regex("John"),
-                        Criteria.where("name").in("John", "Bob"))));
+        assertThat(result).isEqualTo(new Criteria().orOperator(
+                Criteria.where("name").regex("^John", "i"),
+                Criteria.where("name").in("John", "Bob")));
     }
 
     @Test
@@ -146,7 +124,7 @@ public class RequestParamsCriteriaBuilderTest {
 
         Criteria result = RequestParamsCriteriaBuilder.newBuilder().build(filters);
         assertThat(result).isEqualTo(new Criteria().andOperator(
-                Criteria.where("name").regex("John"),
+                Criteria.where("name").regex("^John", "i"),
                 Criteria.where("name").in("John", "Bob")));
     }
 
@@ -163,10 +141,9 @@ public class RequestParamsCriteriaBuilderTest {
 
 
         Criteria result = RequestParamsCriteriaBuilder.newBuilder().build(filters);
-        assertThat(result).isEqualTo(new Criteria().andOperator(
-                new Criteria().orOperator(
-                        Criteria.where("name").regex("John"),
-                        Criteria.where("name").in("Doe", "Smith"))));
+        assertThat(result).isEqualTo(new Criteria().orOperator(
+                Criteria.where("name").regex("^John", "i"),
+                Criteria.where("name").in("Doe", "Smith")));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -208,7 +185,6 @@ public class RequestParamsCriteriaBuilderTest {
                         )
                 ));
 
-
         RequestParamsCriteriaBuilder.newBuilder().build(filters);
     }
 
@@ -231,10 +207,9 @@ public class RequestParamsCriteriaBuilderTest {
         );
 
         Criteria result = RequestParamsCriteriaBuilder.newBuilder().build(filters);
-        assertThat(result).isEqualTo(new Criteria().andOperator(
-                new Criteria().orOperator(
-                        Criteria.where("name").regex("John"),
-                        Criteria.where("lastName").in("Doe", "Smith"))));
+        assertThat(result).isEqualTo(new Criteria().orOperator(
+                Criteria.where("name").regex("^John", "i"),
+                Criteria.where("lastName").in("Doe", "Smith")));
     }
 
     // other tests
@@ -256,7 +231,7 @@ public class RequestParamsCriteriaBuilderTest {
 
         Criteria result = RequestParamsCriteriaBuilder.newBuilder().build(filters);
         assertThat(result).isEqualTo(new Criteria().andOperator(
-                Criteria.where("name").regex("John"),
+                Criteria.where("name").regex("^John", "i"),
                 Criteria.where("name").in("John", "Bob"),
                 Criteria.where("name").lt(4),
                 Criteria.where("name").is("John"),
@@ -272,5 +247,66 @@ public class RequestParamsCriteriaBuilderTest {
         Map<RequestObject, Object> filters = ImmutableMap.of(
                 RequestLogicalOperator.of(LogicalOperatorType.OR), "incorrectTypeValue");
         RequestParamsCriteriaBuilder.newBuilder().build(filters);
+    }
+
+    @Test
+    public void testProduceCriteriaWithRemappedNames() throws Exception {
+        Map<RequestObject, Object> filters = ImmutableMap.of(
+                RequestLogicalOperator.of(LogicalOperatorType.OR),
+                ImmutableMap.of(
+                        RequestField.of("name"), ImmutableMap.of(RequestOperator.of(OperatorType.STARTS_WITH), "John"),
+                        RequestField.of("secondName"), ImmutableMap.of(RequestOperator.of(OperatorType.STARTS_WITH), "Bob"),
+                        RequestField.of("lastName"), ImmutableMap.of(RequestOperator.of(OperatorType.IN), Lists.newArrayList("Doe", "Smith"))
+                )
+        );
+
+        FieldMapper fieldMapper = FieldMapper.of(ImmutableMap.of(
+                "name", "remappedName",
+                "lastName", "remappedLastName"
+        ));
+        Criteria result = RequestParamsCriteriaBuilder.newBuilder().build(Optional.empty(), filters, fieldMapper);
+        assertThat(result).isEqualTo(new Criteria().orOperator(
+                Criteria.where("remappedName").regex("^John", "i"),
+                Criteria.where("secondName").regex("^Bob", "i"),
+                Criteria.where("remappedLastName").in("Doe", "Smith")));
+    }
+
+    @Test
+    public void testProduceCriteriaWithInitialCriteriaIncluded() throws Exception {
+        Map<RequestObject, Object> filters = ImmutableMap.of(
+                RequestLogicalOperator.of(LogicalOperatorType.OR),
+                ImmutableMap.of(
+                        RequestField.of("name"), ImmutableMap.of(RequestOperator.of(OperatorType.STARTS_WITH), "John"),
+                        RequestField.of("secondName"), ImmutableMap.of(RequestOperator.of(OperatorType.STARTS_WITH), "Bob"),
+                        RequestField.of("lastName"), ImmutableMap.of(RequestOperator.of(OperatorType.IN), Lists.newArrayList("Doe", "Smith"))
+                )
+        );
+
+        FieldMapper fieldMapper = FieldMapper.of(ImmutableMap.of());
+        Criteria result = RequestParamsCriteriaBuilder.newBuilder()
+                .build(Optional.of(Criteria.where("initialField").is("initialValue")), filters, fieldMapper);
+        assertThat(result).isEqualTo(new Criteria().andOperator(
+                Criteria.where("initialField").is("initialValue"),
+                new Criteria().orOperator(
+                        Criteria.where("name").regex("^John", "i"),
+                        Criteria.where("secondName").regex("^Bob", "i"),
+                        Criteria.where("lastName").in("Doe", "Smith"))
+                )
+        );
+    }
+
+    @Test
+    public void testProduceCriteriaWithMultipleRootLevelElements() throws Exception {
+        Map<RequestObject, Object> filters = ImmutableMap.of(
+                RequestField.of("name"), ImmutableMap.of(RequestOperator.of(OperatorType.STARTS_WITH), "John"),
+                RequestField.of("secondName"), ImmutableMap.of(RequestOperator.of(OperatorType.STARTS_WITH), "Bob"),
+                RequestField.of("lastName"), ImmutableMap.of(RequestOperator.of(OperatorType.IN), Lists.newArrayList("Doe", "Smith"))
+        );
+
+        Criteria result = RequestParamsCriteriaBuilder.newBuilder().build(filters);
+        assertThat(result).isEqualTo(new Criteria().andOperator(
+                Criteria.where("name").regex("^John", "i"),
+                Criteria.where("secondName").regex("^Bob", "i"),
+                Criteria.where("lastName").in("Doe", "Smith")));
     }
 }

@@ -5,6 +5,7 @@ import com.neoteric.request.RequestField;
 import com.neoteric.request.RequestLogicalOperator;
 import com.neoteric.request.RequestObject;
 import com.neoteric.request.RequestObjectType;
+import com.neoteric.starter.mongo.request.FieldMapper;
 import com.neoteric.starter.mongo.request.Mappings;
 import org.springframework.data.mongodb.core.query.Criteria;
 
@@ -23,7 +24,7 @@ public enum MongoRequestLogicalOperatorProcessor implements MongoRequestObjectPr
     }
 
     @Override
-    public List<Criteria> build(RequestLogicalOperator logicalOperator, Map<RequestObject, Object> rootLogicalValues) {
+    public List<Criteria> build(RequestLogicalOperator logicalOperator, Map<RequestObject, Object> rootLogicalValues, FieldMapper fieldMapper) {
         List<Criteria> criteriaElements = Lists.newArrayList();
         rootLogicalValues.forEach((requestObject, logicalValue) -> {
             if (!MongoRequestFieldProcessor.INSTANCE.apply(requestObject.getType())) {
@@ -32,7 +33,7 @@ public enum MongoRequestLogicalOperatorProcessor implements MongoRequestObjectPr
             if (!(logicalValue instanceof Map)) {
                 throw new IllegalArgumentException("LogicalOperator expect Map as argument, but get: " + logicalValue   );
             }
-            List<Criteria> fieldCriterias = MongoRequestFieldProcessor.INSTANCE.build((RequestField) requestObject, (Map) logicalValue);
+            List<Criteria> fieldCriterias = MongoRequestFieldProcessor.INSTANCE.build((RequestField) requestObject, (Map) logicalValue, fieldMapper);
             criteriaElements.addAll(fieldCriterias);
         });
         Mappings.LogicalOperatorFunction logicalOperatorFunction = LOGICAL_OPERATORS.get(logicalOperator.getOperator());

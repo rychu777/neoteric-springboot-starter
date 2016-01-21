@@ -37,6 +37,18 @@
         </dependency>
         <dependency>
             <groupId>com.neoteric</groupId>
+            <artifactId>neoteric-spring-boot-starter-mongo-test</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.neoteric</groupId>
+            <artifactId>neoteric-spring-boot-starter-test</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.neoteric</groupId>
             <artifactId>request-params</artifactId>
             <version>${request-params.version}</version>
         </dependency>
